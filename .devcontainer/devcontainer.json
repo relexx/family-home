@@ -27,8 +27,15 @@
         "AvaloniaTeam.vscode-avalonia",
         "ms-azuretools.vscode-docker",
         "EditorConfig.EditorConfig",
-        "anthropic.claude-code"
-      ]
+        "anthropic.claude-code",
+        // Weitere KI-Worker für Arbeitspakete (work/), Modell-Verbindung wird lokal in der Extension eingerichtet
+        "saoudrizwan.claude-dev",
+        "kilocode.kilo-code"
+      ],
+      "settings": {
+        // Keine Telemetrie (CLAUDE.md); Cline richtet sich nach dieser Einstellung
+        "telemetry.telemetryLevel": "off"
+      }
     }
   }
 }

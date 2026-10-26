@@ -54,6 +54,14 @@ Sicherheit und Aktualität haben Vorrang vor Komfort. Im Zweifel nachfragen stat
 - Sicherheitsrelevante Änderungen (Auth, Rechte, Krypto, Pipeline, Deployment) im PR ausdrücklich als solche kennzeichnen.
 - Arbeit auf Feature-Branches mit PR; nie direkt auf `main` pushen. Commits mit `-s` (DCO).
 
+## Arbeitspakete (`work/`)
+Abgegrenzte Aufgaben liegen als Arbeitspakete in `work/wp-<work-id>-<kurzname>.md` (Work-ID: 8 Hex-Zeichen, `openssl rand -hex 4`), Vorlage: `work/workpackage.template.md`.
+- Arbeitspakete sind auf Englisch geschrieben (Frontmatter-Werte: `open | in-progress | blocked | in-review | done`).
+- Ein Paket nur anfangen, wenn `status: open` ist, alle Pakete aus `depends_on` in `work/archive/` liegen und es noch keinen Branch `wp/<work-id>-…` und keinen PR dazu gibt (`git fetch --prune`, `git branch -a --list "*wp/<work-id>*"`, `gh pr list --state all --search <work-id>`). Beanspruchen = Branch anlegen, `status: in-progress` setzen, pushen.
+- Das Paket ist der Auftrag: nur die erlaubten Dateien ändern, Schritte und Prüfroutinen der Reihe nach abarbeiten. Bei einer Abbruchbedingung `status: blocked` setzen und nachfragen, nicht improvisieren.
+- Ein Paket = ein PR. Der Worker setzt höchstens `in-review`. Abnahme (`done`, `git mv` nach `work/archive/`) und Merge macht der Inhaber.
+- Neue Pakete enthalten keine offenen Entscheidungen; die werden vorher mit dem Inhaber geklärt.
+
 ## Security Gate – vor jedem PR Pflicht (docs/SICHERHEIT.md Kap. 7)
 1. `scripts/security-gate.sh` muss grün sein. Befunde beheben, nicht unterdrücken. Eine Unterdrückung (`#pragma`, `.editorconfig`, Semgrep-/zizmor-Ignore) nur mit Begründung im Code und im PR.
 2. Bei Architektur- oder Schnittstellenänderungen: `docs/THREAT-MODEL.md` fortschreiben, die ASVS/MASVS-Punkte der PR-Checkliste prüfen und `/security-review` ausführen; das Ergebnis kommt in den PR.
