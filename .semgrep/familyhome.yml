@@ -1,0 +1,32 @@
+# Projektspezifische Semgrep-Regeln (Security Gate, docs/SICHERHEIT.md Kap. 7.2)
+rules:
+  - id: familyhome-endpoint-allow-anonymous
+    languages: [csharp]
+    severity: WARNING
+    message: >-
+      Öffentlicher Endpunkt (AllowAnonymous). Nur zulässig, wenn die Route in DeviceEndpoints.PublicRoutes steht
+      und im PR begründet ist. Das Endpunkt-Inventar-Test erzwingt die Liste.
+    pattern: $X.AllowAnonymous()
+    paths:
+      exclude: [src/FamilyHome.Server/Api/DeviceEndpoints.cs]
+
+  - id: familyhome-no-logging-of-certificates-or-secrets
+    languages: [csharp]
+    severity: ERROR
+    message: Zertifikate, Schlüssel, Codes oder Passkey-Daten dürfen nicht geloggt werden.
+    patterns:
+      - pattern-either:
+          - pattern: $LOG.$METHOD(..., $ARG, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^Log(Trace|Debug|Information|Warning|Error|Critical)$
+      - metavariable-regex:
+          metavariable: $ARG
+          regex: (?i).*(privatekey|secret|password|csr|invitationcode|setupcode|recoverycode|credential).*
+
+  - id: familyhome-no-cleartext-http-url
+    languages: [csharp]
+    severity: ERROR
+    message: Klartext-HTTP ist nur für localhost erlaubt.
+    patterns:
+      - pattern-regex: '"http://(?!localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0|\+:)[^"]+"'

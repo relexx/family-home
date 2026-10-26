@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FamilyHome.Client.ViewModels"
+             x:Class="FamilyHome.Client.Views.TodayView"
+             x:DataType="vm:TodayViewModel">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" />
+    <TextBlock Text="{Binding HolidayText}" Foreground="{DynamicResource MdOnSurfaceVariant}"
+               IsVisible="{Binding HolidayText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    <TextBlock Text="TODO: Termine heute/morgen und fällige Todos (Phase 1)" TextWrapping="Wrap" Opacity="0.6" />
+  </StackPanel>
+</UserControl>

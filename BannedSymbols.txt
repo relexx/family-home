@@ -1,0 +1,20 @@
+T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;Unsichere Deserialisierung – System.Text.Json verwenden
+T:System.Runtime.Serialization.NetDataContractSerializer;Unsichere Deserialisierung
+T:System.Web.Script.Serialization.JavaScriptSerializer;Unsichere Deserialisierung
+F:Newtonsoft.Json.TypeNameHandling.All;Unsichere polymorphe Deserialisierung
+F:Newtonsoft.Json.TypeNameHandling.Auto;Unsichere polymorphe Deserialisierung
+F:Newtonsoft.Json.TypeNameHandling.Objects;Unsichere polymorphe Deserialisierung
+T:System.Security.Cryptography.MD5;Schwacher Hash – SHA-256 oder besser verwenden
+T:System.Security.Cryptography.SHA1;Schwacher Hash – SHA-256 oder besser verwenden
+T:System.Security.Cryptography.DES;Schwache Verschlüsselung – AesGcm verwenden
+T:System.Security.Cryptography.TripleDES;Schwache Verschlüsselung – AesGcm verwenden
+T:System.Security.Cryptography.RC2;Schwache Verschlüsselung – AesGcm verwenden
+T:System.Random;Nicht kryptografisch – RandomNumberGenerator verwenden
+M:Microsoft.EntityFrameworkCore.RelationalQueryableExtensions.FromSqlRaw``1(Microsoft.EntityFrameworkCore.DbSet{``0},System.String,System.Object[]);SQL-Injection-Gefahr – FromSql/FromSqlInterpolated verwenden
+M:Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.ExecuteSqlRaw(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade,System.String,System.Object[]);SQL-Injection-Gefahr – ExecuteSql verwenden
+M:Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.ExecuteSqlRawAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade,System.String,System.Object[]);SQL-Injection-Gefahr – ExecuteSqlAsync verwenden
+M:Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.ExecuteSqlRawAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade,System.String,System.Threading.CancellationToken);SQL-Injection-Gefahr – ExecuteSqlAsync verwenden
+P:System.Net.Http.HttpClientHandler.ServerCertificateCustomValidationCallback;Zertifikatsprüfung nicht aushebeln – Pinning nur über die zentrale Implementierung
+P:System.Net.Http.HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;Zertifikatsprüfung nicht aushebeln
+P:System.Net.Security.SslClientAuthenticationOptions.RemoteCertificateValidationCallback;Zertifikatsprüfung nicht aushebeln – Pinning nur über die zentrale Implementierung
+P:System.DateTime.Now;Lokale Zeit ist mehrdeutig – TimeProvider bzw. DateTimeOffset verwenden

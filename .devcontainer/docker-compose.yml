@@ -1,0 +1,45 @@
+name: familyhome-dev
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
+    volumes:
+      - ..:/workspaces/FamilyHome:cached
+      - nuget-cache:/home/vscode/.nuget
+      - claude-config:/home/vscode/.claude
+    environment:
+      ConnectionStrings__FamilyHome: "Host=db;Port=5432;Database=familyhome;Username=familyhome;Password=familyhome"
+      ASPNETCORE_ENVIRONMENT: Development
+      CLAUDE_CONFIG_DIR: /home/vscode/.claude
+    extra_hosts:
+      # Erreichbarkeit des Host-ADB-Servers (siehe README, Abschnitt "Auf dem Handy testen")
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - db
+      - radicale
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: familyhome
+      POSTGRES_USER: familyhome
+      POSTGRES_PASSWORD: familyhome
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  # CalDAV/CardDAV-Testserver für die DAV-Sync-Entwicklung (http://radicale:5232, Login beliebig)
+  radicale:
+    image: tomsquest/docker-radicale:3.8.3.0
+    restart: unless-stopped
+    volumes:
+      - radicale-data:/data
+
+volumes:
+  nuget-cache:
+  claude-config:
+  pg-data:
+  radicale-data:

@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  # Nicht-Android-Projekte (das Android-Projekt braucht das Workload und läuft im eigenen Job)
+  PROJECTS: >-
+    src/FamilyHome.Shared/FamilyHome.Shared.csproj
+    src/FamilyHome.Server/FamilyHome.Server.csproj
+    src/FamilyHome.Client/FamilyHome.Client.csproj
+    src/FamilyHome.Client.Desktop/FamilyHome.Client.Desktop.csproj
+    tests/FamilyHome.Shared.Tests/FamilyHome.Shared.Tests.csproj
+    tests/FamilyHome.Server.Tests/FamilyHome.Server.Tests.csproj
+
+jobs:
+  build-test:
+    name: Build (Analyzer = Fehler), Format, Audit, Test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      # Locked Mode + NuGetAudit (Fehler ab "moderate") sind in Directory.Build.props für CI=true aktiv
+      - name: Restore
+        run: for p in $PROJECTS; do dotnet restore "$p"; done
+
+      - name: Format prüfen
+        run: for p in $PROJECTS; do dotnet format "$p" --verify-no-changes --no-restore; done
+
+      - name: Build
+        run: for p in $PROJECTS; do dotnet build "$p" -c Release --no-restore -warnaserror; done
+
+      - name: Tests inkl. Sicherheitstests (Endpunkt-Inventar, Zertifikate, Header-Fälschung)
+        run: |
+          dotnet test --project tests/FamilyHome.Shared.Tests -c Release --no-build
+          dotnet test --project tests/FamilyHome.Server.Tests -c Release --no-build
+
+      - name: Verwundbare Pakete (inkl. transitiv)
+        run: |
+          for p in $PROJECTS; do
+            out=$(dotnet list "$p" package --vulnerable --include-transitive)
+            echo "$out"
+            if echo "$out" | grep -q "has the following vulnerable packages"; then exit 1; fi
+          done
+
+  android:
+    name: Android-APK (Debug)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Android-Workload
+        run: dotnet workload install android
+
+      - name: Build APK
+        run: dotnet build src/FamilyHome.Client.Android -c Debug
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: familyhome-debug-apk
+          path: src/FamilyHome.Client.Android/bin/Debug/**/*-Signed.apk
+          retention-days: 7

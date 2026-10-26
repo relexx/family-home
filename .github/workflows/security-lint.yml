@@ -1,0 +1,86 @@
+name: Security Lint
+
+# Teil des Security Gates (docs/SICHERHEIT.md Kap. 7.2). Versionen synchron mit scripts/security-gate.sh halten.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "11 4 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  gitleaks:
+    name: Secrets (gitleaks)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: gitleaks (gesamter Verlauf + Arbeitskopie)
+        run: |
+          docker run --rm -v "$PWD:/src:ro" zricethezav/gitleaks:v8.30.1 git --redact --no-banner --config /src/.gitleaks.toml /src
+          docker run --rm -v "$PWD:/src:ro" zricethezav/gitleaks:v8.30.1 dir --redact --no-banner --config /src/.gitleaks.toml /src
+
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Semgrep (C#, Secrets, Dockerfile, Actions, Projektregeln)
+        run: |
+          docker run --rm -e SEMGREP_SEND_METRICS=off -v "$PWD:/src" -w /src semgrep/semgrep:1.182.1 \
+            semgrep scan --metrics=off --sarif --output semgrep.sarif \
+            --config p/csharp --config p/secrets --config p/dockerfile --config p/github-actions --config .semgrep/ \
+            --error
+      - if: always()
+        uses: github/codeql-action/upload-sarif@8498dc4c2b27cdd99baf0f87955b29ebbf30c78d # v4.39.1
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  workflows:
+    name: Workflows (zizmor, actionlint)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+      - name: zizmor
+        run: pipx run zizmor==1.31.1 --format sarif .github/workflows > zizmor.sarif
+      - if: always()
+        uses: github/codeql-action/upload-sarif@8498dc4c2b27cdd99baf0f87955b29ebbf30c78d # v4.39.1
+        with:
+          sarif_file: zizmor.sarif
+          category: zizmor
+
+  containers-scripts:
+    name: Dockerfiles & Skripte (hadolint, ShellCheck)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: hadolint
+        run: docker run --rm -v "$PWD:/src:ro" -w /src hadolint/hadolint:v2.15.1 hadolint --failure-threshold warning src/FamilyHome.Server/Dockerfile .devcontainer/Dockerfile
+      - name: ShellCheck
+        run: |
+          mapfile -t files < <(git ls-files --cached --others --exclude-standard '*.sh')
+          docker run --rm -v "$PWD:/src:ro" -w /src koalaman/shellcheck:v0.11.0 "${files[@]}"

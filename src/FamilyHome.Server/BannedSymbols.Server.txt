@@ -1,0 +1,6 @@
+M:System.Net.Http.HttpClient.#ctor;Im Server IHttpClientFactory verwenden (Timeouts, Handler-Lebensdauer, zentrale Härtung)
+M:System.Net.Http.HttpClient.#ctor(System.Net.Http.HttpMessageHandler);Im Server IHttpClientFactory verwenden
+M:System.Diagnostics.Process.Start(System.String);Keine Prozesse aus dem Server starten
+M:System.Diagnostics.Process.Start(System.Diagnostics.ProcessStartInfo);Keine Prozesse aus dem Server starten
+P:System.DateTimeOffset.UtcNow;Im Server TimeProvider verwenden (testbar, konsistent)
+P:System.DateTime.UtcNow;Im Server TimeProvider verwenden (testbar, konsistent)

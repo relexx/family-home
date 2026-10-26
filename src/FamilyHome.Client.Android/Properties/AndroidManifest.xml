@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <!-- Erinnerungen (Spezifikation Kap. 8) -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <!-- Eigener Update-Mechanismus per APK -->
+  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+  <!-- Paket-Sichtbarkeit für die Linkliste (Apps starten) und System-Apps -->
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.DIAL" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.SENDTO" />
+      <data android:scheme="mailto" />
+    </intent>
+  </queries>
+
+  <!-- Härtung: kein Klartext-HTTP, keine Cloud-/Geräte-Backups der App-Daten (docs/SICHERHEIT.md Kap. 3.2, 4) -->
+  <application android:label="FamilyHome"
+               android:icon="@drawable/Icon"
+               android:allowBackup="false"
+               android:fullBackupContent="false"
+               android:dataExtractionRules="@xml/data_extraction_rules"
+               android:networkSecurityConfig="@xml/network_security_config"
+               android:usesCleartextTraffic="false" />
+</manifest>

@@ -1,0 +1,45 @@
+# Reverse Proxy für einen FamilyHome-Server (docs/SICHERHEIT.md Kap. 3.1)
+# - Let's Encrypt-Zertifikat für die eigene Domain
+# - mutual TLS: Geräte weisen sich mit einem Zertifikat der Familien-CA aus
+# - ohne Gerätezertifikat sind nur assetlinks.json, Setup und Join erreichbar; alles andere wird abgebrochen
+{
+	admin off
+	email {$ACME_EMAIL}
+}
+
+{$FAMILYHOME_DOMAIN} {
+	tls {
+		protocols tls1.3
+		client_auth {
+			mode verify_if_given
+			trust_pool file /ca/family-ca.crt
+		}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	# Öffentlich (ohne Gerätezertifikat). Ein mitgeschickter Zertifikat-Header wird immer entfernt.
+	@public path /.well-known/assetlinks.json /api/v1/setup /api/v1/join
+	handle @public {
+		reverse_proxy server:8080 {
+			header_up -X-Client-Cert
+		}
+	}
+
+	# Alles andere nur mit gültigem Gerätezertifikat. Caddy setzt den Header selbst (überschreibt Client-Werte);
+	# der Server prüft das Zertifikat erneut gegen die Familien-CA und die Gerätetabelle.
+	# Caddy setzt X-Forwarded-Proto/-For automatisch; der Server braucht beides (Zertifikat-Auth nur bei HTTPS, echte Client-IP).
+	@device expression {http.request.tls.client.fingerprint} != ""
+	handle @device {
+		reverse_proxy server:8080 {
+			header_up X-Client-Cert {http.request.tls.client.certificate_der_base64}
+		}
+	}
+
+	handle {
+		abort
+	}
+}

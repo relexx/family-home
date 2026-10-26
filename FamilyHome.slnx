@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FamilyHome.Shared/FamilyHome.Shared.csproj" />
+    <Project Path="src/FamilyHome.Server/FamilyHome.Server.csproj" />
+    <Project Path="src/FamilyHome.Client/FamilyHome.Client.csproj" />
+    <Project Path="src/FamilyHome.Client.Android/FamilyHome.Client.Android.csproj">
+      <Deploy />
+    </Project>
+    <Project Path="src/FamilyHome.Client.Desktop/FamilyHome.Client.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FamilyHome.Shared.Tests/FamilyHome.Shared.Tests.csproj" />
+    <Project Path="tests/FamilyHome.Server.Tests/FamilyHome.Server.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,10 @@
+# gitleaks-Konfiguration (Security Gate): Standardregeln plus Ausnahmen für Build-Ausgaben
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Build-Ausgaben und Lock-Dateien"
+paths = [
+  '''(^|/)(bin|obj)/''',
+  '''packages\.lock\.json$''',
+]

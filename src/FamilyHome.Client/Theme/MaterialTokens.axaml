@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!--
+    Material-3-Farbrollen (md.sys.color.*) als Fallback-Palette (Baseline-Lila).
+    Unter Android überschreibt IThemeSource diese Werte beim Start mit der Dynamic-Color-Palette des Systems.
+  -->
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="MdPrimary">#6750A4</Color>
+      <Color x:Key="MdOnPrimary">#FFFFFF</Color>
+      <Color x:Key="MdPrimaryContainer">#EADDFF</Color>
+      <Color x:Key="MdOnPrimaryContainer">#21005D</Color>
+      <Color x:Key="MdSecondaryContainer">#E8DEF8</Color>
+      <Color x:Key="MdSurface">#FEF7FF</Color>
+      <Color x:Key="MdSurfaceContainer">#F3EDF7</Color>
+      <Color x:Key="MdOnSurface">#1D1B20</Color>
+      <Color x:Key="MdOnSurfaceVariant">#49454F</Color>
+      <Color x:Key="MdOutline">#79747E</Color>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="MdPrimary">#D0BCFF</Color>
+      <Color x:Key="MdOnPrimary">#381E72</Color>
+      <Color x:Key="MdPrimaryContainer">#4F378B</Color>
+      <Color x:Key="MdOnPrimaryContainer">#EADDFF</Color>
+      <Color x:Key="MdSecondaryContainer">#4A4458</Color>
+      <Color x:Key="MdSurface">#141218</Color>
+      <Color x:Key="MdSurfaceContainer">#211F26</Color>
+      <Color x:Key="MdOnSurface">#E6E0E9</Color>
+      <Color x:Key="MdOnSurfaceVariant">#CAC4D0</Color>
+      <Color x:Key="MdOutline">#938F99</Color>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <!-- Fluent-Akzent auf Material-Primary umbiegen -->
+  <StaticResource x:Key="SystemAccentColor" ResourceKey="MdPrimary" />
+</ResourceDictionary>

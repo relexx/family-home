@@ -1,0 +1,32 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{csproj,props,targets,slnx,xml,axaml,json,yml,yaml,resx}]
+indent_size = 2
+
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:suggestion
+dotnet_style_prefer_collection_expression = true:suggestion
+
+# --- Security Gate (docs/SICHERHEIT.md Kap. 7.2) ---
+[*.cs]
+# Alle Sicherheitsregeln der .NET-Analyzer sind Fehler
+dotnet_analyzer_diagnostic.category-Security.severity = error
+# Verbotene APIs (BannedSymbols.txt)
+dotnet_diagnostic.RS0030.severity = error
+# Meziantou: Regeln, die hier nicht passen
+dotnet_diagnostic.MA0004.severity = none   # ConfigureAwait – ASP.NET Core/Avalonia brauchen es nicht
+dotnet_diagnostic.MA0048.severity = none   # Dateiname = Typname – mehrere kleine Typen pro Datei sind hier erlaubt
+dotnet_diagnostic.MA0026.severity = none   # TODO-Kommentare sind unser Marker für offene Arbeit ("TODO Phase N")
+
+# EF-Core-Entitäten brauchen konkrete Collection-Typen
+[src/FamilyHome.Shared/Model/*.cs]
+dotnet_diagnostic.MA0016.severity = none

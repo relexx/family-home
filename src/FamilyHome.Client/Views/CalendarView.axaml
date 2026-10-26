@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FamilyHome.Client.ViewModels"
+             x:Class="FamilyHome.Client.Views.CalendarView"
+             x:DataType="vm:CalendarViewModel">
+  <DockPanel Margin="16">
+    <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Modes}" SelectedItem="{Binding Mode}" />
+    <TextBlock Text="TODO: Monats-/Wochen-/Tages-/Agenda-Control (eigene Controls, Phase 1)"
+               TextWrapping="Wrap" Opacity="0.6" Margin="0,12,0,0" />
+  </DockPanel>
+</UserControl>

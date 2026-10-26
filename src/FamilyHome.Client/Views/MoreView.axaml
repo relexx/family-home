@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FamilyHome.Client.ViewModels"
+             xmlns:res="using:FamilyHome.Client.Resources"
+             x:Class="FamilyHome.Client.Views.MoreView"
+             x:DataType="vm:MoreViewModel">
+  <StackPanel Margin="16" Spacing="8">
+    <TextBlock Text="{x:Static res:Strings.Settings}" FontSize="22" FontWeight="SemiBold" />
+    <TextBlock Text="{Binding SyncStatus}" />
+    <Button Content="{x:Static res:Strings.SyncNow}" Command="{Binding SyncNowCommand}" />
+  </StackPanel>
+</UserControl>

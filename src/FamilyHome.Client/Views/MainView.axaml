@@ -1,0 +1,48 @@
+<TabbedPage xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:vm="using:FamilyHome.Client.ViewModels"
+            xmlns:views="using:FamilyHome.Client.Views"
+            xmlns:res="using:FamilyHome.Client.Resources"
+            mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+            x:Class="FamilyHome.Client.Views.MainView"
+            x:DataType="vm:MainViewModel">
+  <!-- Untere Navigationsleiste, Spezifikation Kap. 7 -->
+
+  <ContentPage Header="{x:Static res:Strings.TabToday}">
+    <ContentPage.Icon>
+      <PathIcon Data="{StaticResource IconToday}" />
+    </ContentPage.Icon>
+    <views:TodayView DataContext="{Binding Today}" />
+  </ContentPage>
+
+  <ContentPage Header="{x:Static res:Strings.TabCalendar}">
+    <ContentPage.Icon>
+      <PathIcon Data="{StaticResource IconCalendar}" />
+    </ContentPage.Icon>
+    <views:CalendarView DataContext="{Binding Calendar}" />
+  </ContentPage>
+
+  <ContentPage Header="{x:Static res:Strings.TabLists}">
+    <ContentPage.Icon>
+      <PathIcon Data="{StaticResource IconLists}" />
+    </ContentPage.Icon>
+    <views:ListsView DataContext="{Binding Lists}" />
+  </ContentPage>
+
+  <ContentPage Header="{x:Static res:Strings.TabPeople}">
+    <ContentPage.Icon>
+      <PathIcon Data="{StaticResource IconPeople}" />
+    </ContentPage.Icon>
+    <TextBlock Text="{x:Static res:Strings.ComingInPhase2}"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </ContentPage>
+
+  <ContentPage Header="{x:Static res:Strings.TabMore}">
+    <ContentPage.Icon>
+      <PathIcon Data="{StaticResource IconMore}" />
+    </ContentPage.Icon>
+    <views:MoreView DataContext="{Binding More}" />
+  </ContentPage>
+</TabbedPage>

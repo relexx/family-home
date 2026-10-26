@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <!-- Android 13 = API 33 (Spezifikation Kap. 1) -->
+    <SupportedOSPlatformVersion>33</SupportedOSPlatformVersion>
+    <RootNamespace>FamilyHome.Client.Droid</RootNamespace>
+    <ApplicationId>app.familyhome</ApplicationId>
+    <ApplicationTitle>FamilyHome</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+  </PropertyGroup>
+
+  <!-- Release-Signierung: Keystore liegt NICHT im Repo; Werte per Umgebungsvariablen (siehe README) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' And '$(FAMILYHOME_KEYSTORE)' != ''">
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>$(FAMILYHOME_KEYSTORE)</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>$(FAMILYHOME_KEY_ALIAS)</AndroidSigningKeyAlias>
+    <AndroidSigningStorePass>env:FAMILYHOME_KEYSTORE_PASS</AndroidSigningStorePass>
+    <AndroidSigningKeyPass>env:FAMILYHOME_KEYSTORE_PASS</AndroidSigningKeyPass>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidResource Include="Icon.png">
+      <Link>Resources\drawable\Icon.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" />
+    <PackageReference Include="Xamarin.AndroidX.Work.Runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FamilyHome.Client\FamilyHome.Client.csproj" />
+  </ItemGroup>
+</Project>

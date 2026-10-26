@@ -1,0 +1,40 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    groups:
+      avalonia:
+        patterns: ["Avalonia*"]
+      efcore-aspnet:
+        patterns: ["Microsoft.EntityFrameworkCore*", "Microsoft.AspNetCore*", "Microsoft.Extensions*", "Npgsql*"]
+      tests:
+        patterns: ["xunit*", "Microsoft.NET.Test.Sdk", "Microsoft.Testing*"]
+      android:
+        patterns: ["Xamarin.*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directories: ["/src/FamilyHome.Server", "/.devcontainer"]
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker-compose
+    directories: ["/deploy", "/.devcontainer"]
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
