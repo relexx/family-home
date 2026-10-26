@@ -1,5 +1,5 @@
 # FamilyHome DevContainer: .NET 10 + Android-Workload + JDK 17 + Android SDK
-FROM mcr.microsoft.com/devcontainers/base:1-ubuntu-24.04
+FROM mcr.microsoft.com/devcontainers/base:2.0-ubuntu-24.04
 
 ARG DOTNET_CHANNEL=10.0
 ARG ANDROID_CMDLINE_TOOLS=16111833
