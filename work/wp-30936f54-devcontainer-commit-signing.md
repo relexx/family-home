@@ -52,7 +52,7 @@ Decided with the owner:
 
 ## Claiming
 1. `git fetch origin --prune`
-2. `git branch -a --list "*wp/30936f54*"` and `gh pr list --state all --search "30936f54"` must both be empty, and `status` must be `open`. Otherwise **do not start**.
+2. `git branch -a --list "*wp/30936f54*"` and `gh pr list --state all --head wp/30936f54-devcontainer-commit-signing` must both be empty, and `status` must be `open`. Otherwise **do not start**.
 3. `git switch -c wp/30936f54-devcontainer-commit-signing`
 4. In the front matter, set `status: in-progress`, `branch: wp/30936f54-devcontainer-commit-signing` and `assignee`.
 5. `git commit -s -m "WP 30936f54: claimed" work/wp-30936f54-devcontainer-commit-signing.md && git push -u origin HEAD`

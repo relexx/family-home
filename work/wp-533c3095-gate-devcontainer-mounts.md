@@ -38,7 +38,7 @@ security_relevant: true  # Security Gate (pipeline tooling)
 
 ## Claiming
 1. `git fetch origin --prune`
-2. `git branch -a --list "*wp/533c3095*"` and `gh pr list --state all --search "533c3095"` must both be empty, and `status` must be `open`. Otherwise **do not start**.
+2. `git branch -a --list "*wp/533c3095*"` and `gh pr list --state all --head wp/533c3095-gate-devcontainer-mounts` must both be empty, and `status` must be `open`. Otherwise **do not start**.
 3. `git switch -c wp/533c3095-gate-devcontainer-mounts`
 4. In the front matter, set `status: in-progress`, `branch: wp/533c3095-gate-devcontainer-mounts` and `assignee`.
 5. `git commit -s -m "WP 533c3095: claimed" work/wp-533c3095-gate-devcontainer-mounts.md && git push -u origin HEAD`

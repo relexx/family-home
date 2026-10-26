@@ -58,7 +58,7 @@ Exactly the 9 files in the patch, plus this work package file:
 
 ## Claiming
 1. `git fetch origin --prune`
-2. `git branch -a --list "*wp/d188095c*"` and `gh pr list --state all --search "d188095c"` must both be empty, and `status` must be `open`. Otherwise **do not start**.
+2. `git branch -a --list "*wp/d188095c*"` and `gh pr list --state all --head wp/d188095c-localize-ui-texts` must both be empty, and `status` must be `open`. Otherwise **do not start**.
 3. `git switch -c wp/d188095c-localize-ui-texts`
 4. In the front matter, set `status: in-progress`, `branch: wp/d188095c-localize-ui-texts` and `assignee`.
 5. `git commit -s -m "WP d188095c: claimed" work/wp-d188095c-localize-ui-texts.md && git push -u origin HEAD`

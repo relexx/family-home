@@ -86,7 +86,7 @@ All tracked text files **except** the ones listed under "Out of scope". In parti
 
 ## Claiming
 1. `git fetch origin --prune`
-2. `git branch -a --list "*wp/bd2b179e*"` and `gh pr list --state all --search "bd2b179e"` must both be empty, and `status` must be `open`. Otherwise **do not start**.
+2. `git branch -a --list "*wp/bd2b179e*"` and `gh pr list --state all --head wp/bd2b179e-translate-repo-english` must both be empty, and `status` must be `open`. Otherwise **do not start**.
 3. `git switch -c wp/bd2b179e-translate-repo-english`
 4. In the front matter, set `status: in-progress`, `branch: wp/bd2b179e-translate-repo-english` and `assignee`.
 5. `git commit -s -m "WP bd2b179e: claimed" work/wp-bd2b179e-translate-repo-english.md && git push -u origin HEAD`
