@@ -60,7 +60,7 @@ services:
 
   db:
     <<: *hardening
-    image: postgres:17  # TODO: per Digest pinnen (Dependabot pflegt ihn danach)
+    image: postgres:18  # TODO: per Digest pinnen (Dependabot pflegt ihn danach)
     cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     tmpfs: [/tmp, /run/postgresql]
     environment:
