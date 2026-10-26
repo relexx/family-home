@@ -25,6 +25,7 @@ jobs:
       id-token: write          # keyless cosign + Attestierungen
       attestations: write
       security-events: write   # SARIF-Upload
+      actions: read            # codeql-action liest den Workflow-Lauf
     steps:
       - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
         with:
