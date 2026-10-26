@@ -1,80 +1,80 @@
 ---
-status: offen            # offen | in-arbeit | blockiert | zur-abnahme | erfolgreich (setzt nur der Inhaber)
-branch:                  # wp/<work-id>-<kurzname>, wird beim Beanspruchen eingetragen
-bearbeiter:              # Name/Modell des Workers, wird beim Beanspruchen eingetragen
-abhaengig_von: []        # Work-IDs, die vorher erfolgreich sein müssen
-sicherheitsrelevant: nein  # ja, wenn Auth, Rechte, Krypto, Pipeline oder Deployment berührt werden
+status: open             # open | in-progress | blocked | in-review | done (only the owner sets done)
+branch:                  # wp/<work-id>-<short-name>, filled in when claiming
+assignee:                # name/model of the worker, filled in when claiming
+depends_on: []           # work IDs that must be done first
+security_relevant: false # true if auth, permissions, crypto, pipeline or deployment are touched
 ---
 
-# <Titel des Arbeitspakets>
+# <Title of the work package>
 
-> Dateiname: `work/wp-<work-id>-<kurzname>.md`. Die Work-ID besteht aus 8 Hex-Zeichen (`openssl rand -hex 4`).
-> Vor dem Anlegen prüfen, dass es die ID weder in `work/` noch in `work/archive/` schon gibt.
+> File name: `work/wp-<work-id>-<short-name>.md`. The work ID is 8 hex characters (`openssl rand -hex 4`).
+> Before creating it, check that the ID exists neither in `work/` nor in `work/archive/`.
 
-## Ziel
-Was nach Abschluss anders ist, in 1–3 Sätzen. Warum das nötig ist.
+## Goal
+What is different once this is done, in 1–3 sentences, and why it is needed.
 
-## Hintergrund und Entscheidungen
-Nur das, was der Worker wissen muss, um nicht selbst entscheiden zu müssen. Hier stehen getroffene Entscheidungen
-samt Begründung. Offene Entscheidungen gehören nicht in ein Arbeitspaket, sondern werden vorher geklärt.
+## Background and decisions
+Only what the worker needs to know so that they don't have to decide anything themselves. Decisions that have been
+made go here, with their reasons. Open decisions do not belong in a work package; they are settled beforehand.
 
-## Abgrenzung (gehört NICHT dazu)
+## Out of scope
 - …
 
-## Erlaubte Dateien
-Nur diese Dateien dürfen im PR geändert oder angelegt werden (plus diese Paketdatei selbst):
+## Allowed files
+Only these files may be changed or created in the PR (plus this work package file itself):
 - `…`
 
-Muss etwas anderes geändert werden → **Abbruch** (siehe unten).
+If anything else has to change → **stop** (see below).
 
-## Vorbedingungen
-- [ ] Alle Pakete aus `abhaengig_von` liegen in `work/archive/`.
-- [ ] Arbeit im DevContainer, `main` aktuell (`git switch main && git pull --ff-only`).
+## Preconditions
+- [ ] All packages listed in `depends_on` are in `work/archive/`.
+- [ ] Work happens in the DevContainer, `main` is up to date (`git switch main && git pull --ff-only`).
 - [ ] …
 
-## Beanspruchen
+## Claiming
 1. `git fetch origin --prune`
-2. Prüfen, ob es den Branch schon gibt: `git branch -a --list "*wp/<work-id>*"`, außerdem `gh pr list --state all --search "<work-id>"`.
-   Gibt es einen Treffer oder ist `status` nicht `offen` → **nicht anfangen**, dem Inhaber melden.
-3. `git switch -c wp/<work-id>-<kurzname>`
-4. Im Frontmatter `status: in-arbeit`, `branch` und `bearbeiter` eintragen.
-5. `git commit -s -am "WP <work-id>: beansprucht"` und `git push -u origin HEAD`. Erst der gepushte Branch gilt als Beanspruchung.
+2. Check whether the branch already exists: `git branch -a --list "*wp/<work-id>*"`, and also `gh pr list --state all --search "<work-id>"`.
+   If either finds something, or `status` is not `open` → **do not start**, tell the owner.
+3. `git switch -c wp/<work-id>-<short-name>`
+4. In the front matter, set `status: in-progress` and fill in `branch` and `assignee`.
+5. `git commit -s -am "WP <work-id>: claimed"` and `git push -u origin HEAD`. Only the pushed branch counts as a claim.
 
-## Einzelschritte
-Jeder Schritt: was zu tun ist, der genaue Befehl bzw. die genaue Änderung und das erwartete Ergebnis.
+## Steps
+Each step: what to do, the exact command or change, and the expected result.
 
-### Schritt 1: …
-- Tun: …
-- Prüfen: `…` → erwartet: …
+### Step 1: …
+- Do: …
+- Check: `…` → expected: …
 
-## Prüfroutinen (vor dem PR, alle müssen bestehen)
-- [ ] `scripts/security-gate.sh` ist grün.
-- [ ] `git diff --name-only origin/main...HEAD` enthält nur erlaubte Dateien.
+## Checks (before the PR, all must pass)
+- [ ] `scripts/security-gate.sh` is green.
+- [ ] `git diff --name-only origin/main...HEAD` lists only allowed files.
 - [ ] …
 
-## Abnahmekriterien („erfolgreich“)
-- [ ] Alle Prüfroutinen bestanden.
-- [ ] Alle Pflicht-Checks im PR sind grün.
+## Acceptance criteria ("done")
+- [ ] All checks passed.
+- [ ] All required checks on the PR are green.
 - [ ] …
 
-## Abbruchbedingungen
-Bei einem der folgenden Punkte **sofort aufhören**, `status: blockiert` setzen, Befund ins Protokoll schreiben und den Inhaber fragen. Nicht improvisieren, nichts abschwächen oder unterdrücken:
-- Eine Änderung außerhalb der erlaubten Dateien wäre nötig.
-- Ein Befehl liefert ein anderes Ergebnis als erwartet.
-- Das Security Gate oder ein CI-Check ist rot, und die Ursache liegt nicht offensichtlich in einem eigenen Tippfehler.
-- Die Aufgabe würde von `docs/SPEZIFIKATION.md` oder `docs/SICHERHEIT.md` abweichen.
+## Stop conditions
+If any of the following happens, **stop immediately**: set `status: blocked`, write what you found into the log and ask the owner. Do not improvise, weaken or suppress anything:
+- A change outside the allowed files would be needed.
+- A command gives a different result than expected.
+- The Security Gate or a CI check is red and the cause is not obviously a typo of your own.
+- The task would deviate from the specification or the security concept in `docs/`.
 - …
 
-## Abschluss durch den Worker
-1. Ergebnisprotokoll ausfüllen, `status: zur-abnahme` setzen.
-2. Commit mit `git commit -s`, Push, PR gegen `main` mit Verweis auf diese Datei. Ist das Paket sicherheitsrelevant, im PR so kennzeichnen.
-3. Nicht selbst mergen.
+## Completion by the worker
+1. Fill in the log, set `status: in-review`.
+2. Commit with `git commit -s`, push, open a PR against `main` that references this file. If the package is security-relevant, mark the PR accordingly.
+3. Do not merge it yourself.
 
-## Abnahme durch den Inhaber
-Im PR-Branch `status: erfolgreich` setzen, `git mv work/wp-<work-id>-<kurzname>.md work/archive/`, danach Squash-Merge.
+## Acceptance by the owner
+On the PR branch: set `status: done`, `git mv work/wp-<work-id>-<short-name>.md work/archive/`, then squash-merge.
 
-## Ergebnisprotokoll (füllt der Worker aus)
-- Datum/Bearbeiter:
+## Log (filled in by the worker)
+- Date/assignee:
 - PR:
-- Ausgaben der Prüfroutinen (gekürzt):
-- Abweichungen/Auffälligkeiten:
+- Output of the checks (shortened):
+- Deviations/observations:

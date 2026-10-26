@@ -56,9 +56,10 @@ Sicherheit und Aktualität haben Vorrang vor Komfort. Im Zweifel nachfragen stat
 
 ## Arbeitspakete (`work/`)
 Abgegrenzte Aufgaben liegen als Arbeitspakete in `work/wp-<work-id>-<kurzname>.md` (Work-ID: 8 Hex-Zeichen, `openssl rand -hex 4`), Vorlage: `work/workpackage.template.md`.
-- Ein Paket nur anfangen, wenn `status: offen` und es noch keinen Branch `wp/<work-id>-…` und keinen PR dazu gibt (`git fetch --prune`, `git branch -a --list "*wp/<work-id>*"`, `gh pr list --state all --search <work-id>`). Beanspruchen = Branch anlegen, `status: in-arbeit` setzen, pushen.
-- Das Paket ist der Auftrag: nur die erlaubten Dateien ändern, Schritte und Prüfroutinen der Reihe nach abarbeiten. Bei einer Abbruchbedingung `status: blockiert` setzen und nachfragen, nicht improvisieren.
-- Ein Paket = ein PR. Der Worker setzt höchstens `zur-abnahme`. Abnahme (`erfolgreich`, `git mv` nach `work/archive/`) und Merge macht der Inhaber.
+- Arbeitspakete sind auf Englisch geschrieben (Frontmatter-Werte: `open | in-progress | blocked | in-review | done`).
+- Ein Paket nur anfangen, wenn `status: open` ist, alle Pakete aus `depends_on` in `work/archive/` liegen und es noch keinen Branch `wp/<work-id>-…` und keinen PR dazu gibt (`git fetch --prune`, `git branch -a --list "*wp/<work-id>*"`, `gh pr list --state all --search <work-id>`). Beanspruchen = Branch anlegen, `status: in-progress` setzen, pushen.
+- Das Paket ist der Auftrag: nur die erlaubten Dateien ändern, Schritte und Prüfroutinen der Reihe nach abarbeiten. Bei einer Abbruchbedingung `status: blocked` setzen und nachfragen, nicht improvisieren.
+- Ein Paket = ein PR. Der Worker setzt höchstens `in-review`. Abnahme (`done`, `git mv` nach `work/archive/`) und Merge macht der Inhaber.
 - Neue Pakete enthalten keine offenen Entscheidungen; die werden vorher mit dem Inhaber geklärt.
 
 ## Security Gate – vor jedem PR Pflicht (docs/SICHERHEIT.md Kap. 7)
