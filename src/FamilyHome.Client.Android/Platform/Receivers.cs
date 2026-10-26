@@ -51,7 +51,9 @@ public static class NotificationChannels
 
     public static void Show(Context context, string channel, string title, string? body, string? deepLink)
     {
-        var open = new Intent(Intent.ActionView, Android.Net.Uri.Parse(deepLink ?? "familyhome://today"), context, typeof(MainActivity));
+        var uri = Android.Net.Uri.Parse(deepLink ?? "familyhome://today")
+            ?? throw new InvalidOperationException("Ungültiger Deep-Link für die Benachrichtigung.");
+        var open = new Intent(Intent.ActionView, uri, context, typeof(MainActivity));
         var pending = PendingIntent.GetActivity(context, 0, open, PendingIntentFlags.Immutable | PendingIntentFlags.UpdateCurrent);
 
         var notification = new Notification.Builder(context, channel)

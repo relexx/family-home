@@ -1,0 +1,47 @@
+name: DCO
+
+# Prüft, dass jeder Commit eines PRs einen Developer-Certificate-of-Origin-Sign-off trägt (CONTRIBUTING.md)
+# und dass der Sign-off zur Autor-E-Mail passt. Pflicht-Check im Ruleset für main.
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  dco:
+    name: DCO
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Sign-off jedes Commits prüfen
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          failed=0
+          for sha in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+            author_email=$(git log -1 --format='%ae' "$sha")
+            author_name=$(git log -1 --format='%an' "$sha")
+            subject=$(git log -1 --format='%s' "$sha")
+            # Bots (z. B. Dependabot) können keinen DCO-Sign-off leisten
+            if [[ "$author_name" == *"[bot]" ]]; then
+              echo "⏭️  ${sha:0:7} von $author_name übersprungen"
+              continue
+            fi
+            if git log -1 --format='%(trailers:key=Signed-off-by,valueonly)' "$sha" \
+                 | grep -qiF "<$author_email>"; then
+              echo "✅ ${sha:0:7} $subject"
+            else
+              echo "::error::Commit ${sha:0:7} ('$subject') hat keinen Signed-off-by mit der Autor-E-Mail <$author_email>. Lösung: git commit --amend -s bzw. git rebase --signoff"
+              failed=1
+            fi
+          done
+          exit "$failed"
