@@ -19,7 +19,7 @@ security_relevant: true  # Security Gate (pipeline tooling)
   2. The script mounts `LOCAL_WORKSPACE_FOLDER` if it is set. Inside a container (`/.dockerenv` exists) without that variable, the docker-based checks fail with a clear message. Otherwise (e.g. directly on a host or a CI runner) `$PWD` is used as before.
   3. The mount uses `--mount type=bind,…` instead of `-v`. `--mount` fails if the source path does not exist, so a wrong path can never produce an empty mount.
 - The host path is personal (it contains the user name). It must never be written into the repo, the PR or the log; use `<host path>` instead.
-- **Language:** script comments and messages stay German (current convention). Copy the snippets exactly as written.
+- **Language:** everything written into the repo is English, including the snippets below, even where the surrounding file is still German (work package bd2b179e translates the rest later). Copy the snippets exactly as written.
 
 ## Out of scope
 - No change to tool versions/images, to the list of checks or to `.github/workflows/security-lint.yml`.
@@ -53,7 +53,7 @@ security_relevant: true  # Security Gate (pipeline tooling)
 ### Step 2: `devcontainer.json`
 - Do: in `.devcontainer/devcontainer.json`, add after the line `"postCreateCommand": …,`:
   ```jsonc
-    // Host-Pfad des Repos: docker-outside-of-docker braucht ihn für Bind-Mounts (scripts/security-gate.sh)
+    // Host path of the repo: docker-outside-of-docker needs it for bind mounts (scripts/security-gate.sh)
     "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
   ```
 - Check: no other key changes (`git diff .devcontainer/devcontainer.json` shows only these 2 added lines).
@@ -65,15 +65,15 @@ security_relevant: true  # Security Gate (pipeline tooling)
   ```
   with:
   ```bash
-  # Quelle für Bind-Mounts: Im DevContainer (docker-outside-of-docker) läuft der Docker-Daemon auf dem Host und kennt
-  # den Container-Pfad nicht; devcontainer.json setzt deshalb LOCAL_WORKSPACE_FOLDER auf den Host-Pfad.
+  # Source for bind mounts: inside the DevContainer (docker-outside-of-docker) the Docker daemon runs on the host and
+  # does not know the container path; devcontainer.json therefore sets LOCAL_WORKSPACE_FOLDER to the host path.
   mount_source() {
     if [[ -n "${LOCAL_WORKSPACE_FOLDER:-}" ]]; then printf '%s\n' "$LOCAL_WORKSPACE_FOLDER"
     elif [[ -f /.dockerenv ]]; then
-      echo "LOCAL_WORKSPACE_FOLDER fehlt: Im Container ist \$PWD kein Host-Pfad (DevContainer neu bauen)" >&2; return 1
+      echo "LOCAL_WORKSPACE_FOLDER is not set: inside a container \$PWD is not a host path (rebuild the DevContainer)" >&2; return 1
     else printf '%s\n' "$PWD"; fi
   }
-  # --mount statt -v: bricht ab, wenn der Pfad auf dem Host fehlt, statt leer zu mounten (sonst falsch-grüne Prüfungen)
+  # --mount instead of -v: fails if the path is missing on the host instead of mounting an empty directory (false greens)
   docker_run() {
     local src; src=$(mount_source) || return 1
     docker run --rm --mount "type=bind,source=$src,target=/src,readonly" -w /src "$@"
@@ -92,7 +92,7 @@ scripts/security-gate.sh
 
 ### Step 5: Tests (negative)
 - `env -u LOCAL_WORKSPACE_FOLDER scripts/security-gate.sh 2>&1 | tail -10`
-  → **not** passed; the output contains `LOCAL_WORKSPACE_FOLDER fehlt` and all 5 docker-based checks are listed as failed (gitleaks, Semgrep, actionlint, hadolint, ShellCheck). zizmor stays green (it does not use Docker).
+  → **not** passed; the output contains `LOCAL_WORKSPACE_FOLDER is not set` and all 5 docker-based checks are listed as failed (gitleaks, Semgrep, actionlint, hadolint, ShellCheck). zizmor stays green (it does not use Docker).
 - `LOCAL_WORKSPACE_FOLDER=/does/not/exist scripts/security-gate.sh 2>&1 | tail -10`
   → **not** passed; the 5 docker-based checks fail (Docker reports that the bind source path does not exist).
 

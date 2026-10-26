@@ -11,6 +11,11 @@ security_relevant: false # true if auth, permissions, crypto, pipeline or deploy
 > File name: `work/wp-<work-id>-<short-name>.md`. The work ID is 8 hex characters (`openssl rand -hex 4`).
 > Before creating it, check that the ID exists neither in `work/` nor in `work/archive/`.
 
+## Language
+Everything written into the repo is English: code, string literals, comments, documentation, commit messages, PR texts
+and the log below. This also applies where surrounding files are still German. The app UI supports English and German;
+user-facing texts go only into `Resources/Strings*.resx` (German neutral, English), never hard-coded.
+
 ## Goal
 What is different once this is done, in 1–3 sentences, and why it is needed.
 
