@@ -62,7 +62,7 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 
 ## Claiming
 1. `git fetch origin --prune`
-2. `git branch -a --list "*wp/3399485c*"` and `gh pr list --state all --search "3399485c"` must both be empty, and `status` must be `open`. Otherwise **do not start**.
+2. `git branch -a --list "*wp/3399485c*"` and `gh pr list --state all --head wp/3399485c-lockfiles-sdk-pin` must both be empty, and `status` must be `open`. Otherwise **do not start**.
 3. `git switch -c wp/3399485c-lockfiles-sdk-pin`. The two untracked files come along.
 4. In the front matter, set `status: in-progress`, `branch: wp/3399485c-lockfiles-sdk-pin` and `assignee`.
 5. `git commit -s -m "WP 3399485c: claimed" work/wp-3399485c-lockfiles-sdk-pin.md && git push -u origin HEAD`

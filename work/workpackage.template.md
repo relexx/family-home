@@ -39,7 +39,8 @@ If anything else has to change → **stop** (see below).
 
 ## Claiming
 1. `git fetch origin --prune`
-2. Check whether the branch already exists: `git branch -a --list "*wp/<work-id>*"`, and also `gh pr list --state all --search "<work-id>"`.
+2. Check whether the branch already exists: `git branch -a --list "*wp/<work-id>*"`, and also `gh pr list --state all --head wp/<work-id>-<short-name>`.
+   (Do not search for the work ID in PR texts: the PR that created the package mentions it too.)
    If either finds something, or `status` is not `open` → **do not start**, tell the owner.
 3. `git switch -c wp/<work-id>-<short-name>`
 4. In the front matter, set `status: in-progress` and fill in `branch` and `assignee`.

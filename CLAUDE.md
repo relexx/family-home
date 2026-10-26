@@ -57,7 +57,7 @@ Sicherheit und Aktualität haben Vorrang vor Komfort. Im Zweifel nachfragen stat
 ## Work packages (`work/`)
 Self-contained tasks live as work packages in `work/wp-<work-id>-<short-name>.md` (work ID: 8 hex characters, `openssl rand -hex 4`), template: `work/workpackage.template.md`.
 - Work packages and all other instructions for worker AIs are written in English (front matter values: `open | in-progress | blocked | in-review | done`).
-- Only start a package if `status: open`, all packages in `depends_on` are in `work/archive/`, and there is no branch `wp/<work-id>-…` and no PR for it yet (`git fetch --prune`, `git branch -a --list "*wp/<work-id>*"`, `gh pr list --state all --search <work-id>`). Claiming = create the branch, set `status: in-progress`, push.
+- Only start a package if `status: open`, all packages in `depends_on` are in `work/archive/`, and there is no branch `wp/<work-id>-…` and no PR for it yet (`git fetch --prune`, `git branch -a --list "*wp/<work-id>*"`, `gh pr list --state all --head wp/<work-id>-<short-name>`). Claiming = create the branch, set `status: in-progress`, push.
 - The package is the assignment: change only the allowed files, work through steps and checks in order. On a stop condition, set `status: blocked` and ask; do not improvise.
 - One package = one PR. The worker sets at most `in-review`. Acceptance (`done`, `git mv` to `work/archive/`) and merge are done by the owner.
 - New packages contain no open decisions; those are settled with the owner beforehand.
