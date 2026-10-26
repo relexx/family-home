@@ -61,6 +61,7 @@ Self-contained tasks live as work packages in `work/wp-<work-id>-<short-name>.md
 - The package is the assignment: change only the allowed files, work through steps and checks in order. On a stop condition, set `status: blocked` and ask; do not improvise.
 - One package = one PR. The worker sets at most `in-review`. Acceptance (`done`, `git mv` to `work/archive/`) and merge are done by the owner.
 - New packages contain no open decisions; those are settled with the owner beforehand.
+- New or changed work packages are written only on the long-lived branch `work-package-management` and reach `main` via PR from there (never on feature or `wp/…` branches; the worker's own status updates on its `wp/…` branch are the exception). Before adding to it, bring it up to date: `git switch work-package-management && git pull --ff-only && git merge origin/main`. The branch is never deleted.
 
 ## Security Gate – vor jedem PR Pflicht (docs/SICHERHEIT.md Kap. 7)
 1. `scripts/security-gate.sh` muss grün sein. Befunde beheben, nicht unterdrücken. Eine Unterdrückung (`#pragma`, `.editorconfig`, Semgrep-/zizmor-Ignore) nur mit Begründung im Code und im PR.

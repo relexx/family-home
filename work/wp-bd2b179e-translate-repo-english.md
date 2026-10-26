@@ -2,7 +2,7 @@
 status: open
 branch:
 assignee:
-depends_on: [533c3095, 3399485c]  # both touch files translated here; run this package last to avoid conflicts
+depends_on: [533c3095, 3399485c, d188095c]  # they touch files translated here; run this package last to avoid conflicts
 security_relevant: true            # touches workflows, CODEOWNERS and the security concept (text only)
 ---
 
@@ -20,7 +20,7 @@ The owner's language rules are applied to the whole repo and written down in `CL
 - **The app supports English and German** via resx. This does not change.
 - **Chat with the owner is German.**
 
-Today most of the repo is German. After this package, only the German resx file and the explicitly listed exceptions below remain German.
+Today most of the repo is German. After this package, only the German resx file remains German (and the glossary in this file).
 
 ## Background and decisions
 - **English only.** German documentation is replaced, not kept as a copy.
@@ -64,11 +64,7 @@ Today most of the repo is German. After this package, only the German resx file 
   `CONTRIBUTING.md` gets the same first two rules.
 
 ## Out of scope
-- **Hard-coded user-facing German texts are not translated here.** They have to move into resx (English and German), which is a code change and a separate work package. Today these are:
-  - the holiday names in `src/FamilyHome.Shared/Holidays/GermanHolidays.cs`;
-  - the placeholder texts in `Text="…"` attributes of the views in `src/FamilyHome.Client/Views/*.axaml`.
-
-  Comments in these files are translated as usual. List every such text you find in the log.
+- **User-facing texts are not translated here.** They belong in resx; work package d188095c already moved the hard-coded ones there (holiday names, view placeholders, sync status). If you still find a hard-coded user-facing German text: do not translate it, see "Stop conditions".
 - **No identifiers change:** class, method, property, file and resource names stay as they are, except the two renamed docs. If you find a German identifier, list it in the log; do not rename it.
 - Workflow and job names (see above).
 - `Resources/Strings*.resx`, `LICENSE`, all `packages.lock.json`, `work/archive/`, the git history.
@@ -84,7 +80,7 @@ All tracked text files **except** the ones listed under "Out of scope". In parti
 - `.semgrep/**` (comments and `message:`), `BannedSymbols*.txt` (message text after `;`), `Directory.*.props`, `*.csproj`, `.editorconfig`, `.gitleaks.toml`, `.gitignore`, `.dockerignore`
 
 ## Preconditions
-- [ ] Packages 533c3095 and 3399485c are in `work/archive/`.
+- [ ] Packages 533c3095, 3399485c and d188095c are in `work/archive/`.
 - [ ] Work happens in the DevContainer, `main` is up to date, `scripts/security-gate.sh` is green on `main`.
 - [ ] There is no other open PR that changes `docs/`. If there is one: ask the owner whether to wait.
 
@@ -161,7 +157,7 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 - Check: `scripts/security-gate.sh` is green (actionlint, zizmor, hadolint, ShellCheck, Semgrep).
 
 ### Step 6: C# and AXAML
-- Do: translate comments (`//`, `///`, `/* */`, `<!-- -->`) and string literals (log, exception and debug messages, test data) in `src/**` and `tests/**`. Keep `TODO Phase N` markers exactly (`TODO Phase 1: …`), translate only the text after them. Do **not** touch the user-facing texts listed under "Out of scope".
+- Do: translate comments (`//`, `///`, `/* */`, `<!-- -->`) and string literals (log, exception and debug messages, test data) in `src/**` and `tests/**`. Keep `TODO Phase N` markers exactly (`TODO Phase 1: …`), translate only the text after them. Do **not** touch resx files or user-facing texts (see "Out of scope").
 - Do: if a test asserts on a translated message, update the expected text in the test to match.
 - Check: `python3 -I "${TMPDIR:-/tmp}/wp-bd2b179e-codecheck.py" HEAD` before committing → `OK`.
 - Check: `grep -rn "TODO Phase" src | wc -l` → same number as in step 1.
@@ -169,9 +165,9 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 
 ### Step 7: Look for leftover German
 - Check: `git grep -nIP '[äöüÄÖÜß]' -- . ':!*.resx' ':!work/archive' ':!**/packages.lock.json'`
-  → only the user-facing texts from "Out of scope" (holiday names, AXAML placeholder texts) and the glossary entries in this file. List the files in the log.
+  → only the glossary entries in this file. Any other hit: translate it, or stop if it is a user-facing text.
 - Check: `git grep -nIwE 'und|nicht|oder|wird|werden|für|mit|wenn|auch|ist' -- . ':!*.resx' ':!work/archive' ':!**/packages.lock.json' ':!work/wp-bd2b179e-*'`
-  → no output apart from the "Out of scope" texts. Review every hit.
+  → no output. Review every hit.
 
 ## Checks (before the PR, all must pass)
 - [ ] `scripts/security-gate.sh` is green.
@@ -184,7 +180,7 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
 - [ ] All 10 required checks on the PR are green (identical names as before).
-- [ ] Only the exceptions from "Out of scope" remain German; they are listed in the log so the owner can create the resx work package.
+- [ ] Apart from `Strings.resx` and the glossary in this file, nothing German remains.
 - [ ] Owner reviewed spot checks of the specification and the security concept for correct meaning.
 
 ## Stop conditions
@@ -192,7 +188,7 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 - the code check reports a real change outside comments and string literals;
 - a build, test, format check or the Security Gate fails and the cause is not a translated test expectation;
 - a workflow or job name would change;
-- a hard-coded German text is user-facing but not listed under "Out of scope" (ask before touching it);
+- you find a hard-coded user-facing German text (it should have been moved to resx by d188095c; ask before touching it);
 - a document seems to contain a content error or contradiction. Do not fix it; translate it as is and ask;
 - a file outside the allowed list would have to change;
 - another open PR changes the same documents.
@@ -212,7 +208,7 @@ On the PR branch: set `status: done`, `git mv work/wp-bd2b179e-translate-repo-en
 - Date/assignee:
 - PR:
 - Output of the checks (shortened):
-- Remaining German user-facing texts (for the resx work package):
+- Hard-coded user-facing texts found (should be none):
 - German identifiers found (not renamed):
 - Unclear passages:
 - Deviations/observations:
