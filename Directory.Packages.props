@@ -20,6 +20,9 @@
   <ItemGroup Label="Android">
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
     <PackageVersion Include="Xamarin.AndroidX.Work.Runtime" Version="2.11.2.1" />
+    <!-- Lifecycle auf eine Linie bringen: Work.Runtime zieht 2.11, Avalonia.Android noch 2.10 (NU1608) -->
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="2.11.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="2.11.0.1" />
   </ItemGroup>
   <ItemGroup Label="Server">
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />

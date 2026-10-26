@@ -1,3 +1,4 @@
+using System.Globalization;
 using Android.App;
 using Android.Content;
 using FamilyHome.Client.Platform;
@@ -21,14 +22,14 @@ public sealed class AlarmReminderScheduler(AndroidApplication app) : IReminderSc
 
         // Alte Alarme abbrechen (Request-Codes wurden beim letzten Planen gemerkt)
         foreach (var code in prefs.GetStringSet(KeyScheduled, null) ?? [])
-            alarms.Cancel(CreatePendingIntent(int.Parse(code), null));
+            alarms.Cancel(CreatePendingIntent(int.Parse(code, CultureInfo.InvariantCulture), null));
 
         var codes = new List<string>();
         foreach (var r in reminders.Where(r => r.FireAt > DateTimeOffset.UtcNow))
         {
             var requestCode = r.ReminderId.GetHashCode();
             alarms.SetExactAndAllowWhileIdle(AlarmType.RtcWakeup, r.FireAt.ToUnixTimeMilliseconds(), CreatePendingIntent(requestCode, r));
-            codes.Add(requestCode.ToString());
+            codes.Add(requestCode.ToString(CultureInfo.InvariantCulture));
         }
 
         prefs.Edit()!.PutStringSet(KeyScheduled, codes)!.Apply();

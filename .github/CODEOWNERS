@@ -1,10 +1,9 @@
-# TODO: GitHub-Benutzernamen eintragen (ersetzt @OWNER), sobald das Repository angelegt ist.
 # Änderungen an Pipeline, Deployment und Sicherheitscode brauchen immer ein Review des Owners.
-/.github/                    @OWNER
-/deploy/                     @OWNER
-/.devcontainer/              @OWNER
-/docs/SICHERHEIT.md          @OWNER
-/src/**/Security/            @OWNER
-/src/FamilyHome.Server/Auth/ @OWNER
-/Directory.Packages.props    @OWNER
-/nuget.config                @OWNER
+/.github/                    @relexx
+/deploy/                     @relexx
+/.devcontainer/              @relexx
+/docs/SICHERHEIT.md          @relexx
+/src/**/Security/            @relexx
+/src/FamilyHome.Server/Auth/ @relexx
+/Directory.Packages.props    @relexx
+/nuget.config                @relexx

@@ -125,7 +125,7 @@ Internet ──443──► Caddy (Let's Encrypt, TLS 1.3, client_auth: Familien
 
 ### 5.2 Server-Updates bei Selbst-Hostern
 - **Offizielles Image:**
-  - `ghcr.io/<org>/familyhome-server`, **Multi-Arch** (amd64 und arm64 für NAS/Raspberry Pi);
+  - `ghcr.io/relexx/familyhome-server`, **Multi-Arch** (amd64 und arm64 für NAS/Raspberry Pi);
   - chiseled (ohne Shell und Paketmanager), Nicht-Root, Read-only-Root-Dateisystem;
   - **wöchentlich neu gebaut** (Basis-Image-Patches);
   - **cosign-signiert** (keyless, gebunden an den Release-Workflow dieses Repos), mit **SBOM + SLSA-Provenance**.
@@ -151,10 +151,12 @@ Internet ──443──► Caddy (Let's Encrypt, TLS 1.3, client_auth: Familien
 
 ### 6.1 Repository-Einstellungen
 - **Öffentliches Repo** (Apache-2.0). Beiträge mit **DCO** (`Signed-off-by`) statt CLA.
-- **Rulesets auf `main`:**
-  - PR-Pflicht, alle Pflicht-Checks aus 6.2, signierte Commits, linearer Verlauf;
-  - kein Force-Push;
-  - CODEOWNERS-Review für Pipeline, Deployment und Sicherheitscode.
+- **Ruleset „main schützen“** (aktiv):
+  - PR-Pflicht, alle Pflicht-Checks aus 6.2, Branch muss aktuell sein;
+  - signierte Commits, linearer Verlauf, **nur Squash-Merge** (GitHub signiert den Squash-Commit);
+  - kein Force-Push, kein Löschen;
+  - CODEOWNERS-Review, gelöste Threads, Reviews verfallen bei neuen Pushes;
+  - Repo-Admins dürfen das Review **nur über einen PR** umgehen, weil ein einzelner Maintainer sonst eigene PRs nicht mergen könnte. Direkte Pushes bleiben gesperrt.
 - **Secret Scanning + Push Protection**, **Dependabot Alerts + Security Updates**, **Private Vulnerability Reporting** (`SECURITY.md`), **OpenSSF Scorecard** öffentlich.
 - **Actions-Härtung:**
   - Actions auf Commit-SHA gepinnt;
@@ -170,6 +172,7 @@ Internet ──443──► Caddy (Let's Encrypt, TLS 1.3, client_auth: Familien
 |---|---|---|
 | `ci.yml` | PR, Push | Restore im Locked Mode, Build mit **Analyzern als Fehler** (Kap. 7.2), Format, Tests inkl. Sicherheitstests, NuGet-Audit, Android-APK |
 | `security-lint.yml` | PR, Push, wöchentlich | **gitleaks** (Secrets, gesamter Verlauf), **Semgrep** (C#-, Secrets-, Dockerfile- und Actions-Regeln), **zizmor** + **actionlint** (Workflows), **hadolint** (Dockerfiles), **ShellCheck** (Skripte); SARIF ins Security-Tab |
+| `dco.yml` | PR | Jeder Commit trägt `Signed-off-by` mit der Autor-E-Mail (Bots ausgenommen) |
 | `codeql.yml` | PR, Push, wöchentlich | CodeQL für C# und Actions (`security-extended`) |
 | `dependency-review.yml` | PR | Blockiert Abhängigkeiten mit Schwachstellen ab „moderate“ sowie inkompatible Lizenzen (GPL/AGPL; Apache-2.0-kompatibel bleiben) |
 | `container.yml` | Push `main`, wöchentlich | Multi-Arch-Image, **Grype-Scan** (bricht bei High/Critical ab), GHCR, cosign, SBOM, Provenance |
