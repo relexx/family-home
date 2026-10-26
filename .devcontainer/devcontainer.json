@@ -28,12 +28,12 @@
         "ms-azuretools.vscode-docker",
         "EditorConfig.EditorConfig",
         "anthropic.claude-code",
-        // Weitere KI-Worker für Arbeitspakete (work/), Modell-Verbindung wird lokal in der Extension eingerichtet
+        // Additional AI workers for work packages (work/); the model connection is configured locally in the extension
         "saoudrizwan.claude-dev",
         "kilocode.kilo-code"
       ],
       "settings": {
-        // Keine Telemetrie (CLAUDE.md); Cline richtet sich nach dieser Einstellung
+        // No telemetry (CLAUDE.md); Cline follows this setting
         "telemetry.telemetryLevel": "off"
       }
     }

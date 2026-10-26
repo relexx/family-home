@@ -29,7 +29,7 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
   - Until then the Android check is red. That is intended: auto-merge cannot merge anything inconsistent.
   - Fully automating that follow-up is a separate, later work package.
 - Signed commits are not needed locally: GitHub signs squash merges. DCO (`-s`) is mandatory.
-- **Language:** the snippets below that end up in the repo (comments, SICHERHEIT.md) are in German on purpose, because German is still the documentation language. Copy them exactly as written.
+- **Language:** everything written into the repo is English, including the snippets below, even where the surrounding file is still German (work package bd2b179e translates the rest later). Copy the snippets exactly as written.
 
 ## Out of scope
 - No update of packages, actions, images or of the SDK itself; the version stays `10.0.403`.
@@ -90,7 +90,7 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 In `.devcontainer/Dockerfile`:
 - Replace `ARG DOTNET_CHANNEL=10.0` with:
   ```dockerfile
-  # Muss global.json entsprechen (Android-Lock-Datei, docs/SICHERHEIT.md 6.3); geprüft in devcontainer.yml
+  # Must match global.json (Android lock file, docs/SICHERHEIT.md 6.3); checked in devcontainer.yml
   ARG DOTNET_SDK_VERSION=10.0.403
   ```
 - In the `# .NET SDK` section, replace `--channel ${DOTNET_CHANNEL}` with `--version ${DOTNET_SDK_VERSION}`.
@@ -102,7 +102,7 @@ In `.devcontainer/Dockerfile`:
 - Do: add `"global.json"` to both `pull_request.paths` and `push.paths`.
 - Do: after the step `Werkzeuge im Image prüfen`, append a new step:
   ```yaml
-      - name: SDK-Version wie in global.json
+      - name: SDK version matches global.json
         run: |
           expected="$(jq -r .sdk.version global.json)"
           actual="$(docker run --rm familyhome-devcontainer:ci dotnet --version)"
@@ -119,19 +119,19 @@ In `.github/workflows/ci.yml` (`android` job only) and in `.github/workflows/rel
 ```
 with:
 ```yaml
-      - name: SDK-Version aus global.json
+      - name: SDK version from global.json
         id: sdk
         run: echo "version=$(jq -r .sdk.version global.json)" >> "$GITHUB_OUTPUT"
 
-      # Exakt diese Version, getrennt von den vorinstallierten SDKs des Runners: Die Android-Lock-Datei
-      # enthält Microsoft.NET.ILLink.Tasks in der Runtime-Version des SDK (docs/SICHERHEIT.md 6.3)
+      # Exactly this version, isolated from the SDKs preinstalled on the runner: the Android lock file
+      # contains Microsoft.NET.ILLink.Tasks in the runtime version of the SDK (docs/SICHERHEIT.md 6.3)
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         env:
           DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
         with:
           dotnet-version: ${{ steps.sdk.outputs.version }}
 
-      - name: SDK-Version prüfen
+      - name: Check SDK version
         env:
           EXPECTED: ${{ steps.sdk.outputs.version }}
         run: |
@@ -140,7 +140,7 @@ with:
 ```
 In `ci.yml` only (`android` job), also insert this before `Build APK`, so that a lock mismatch gives a clear error message:
 ```yaml
-      - name: Restore (Locked Mode)
+      - name: Restore (locked mode)
         run: dotnet restore src/FamilyHome.Client.Android --locked-mode
 ```
 - Check: `grep -n "global-json-file" .github/workflows/*.yml`
@@ -152,7 +152,7 @@ In `ci.yml` only (`android` job), also insert this before `Build APK`, so that a
 ### Step 6: Dependabot for the SDK
 In `.github/dependabot.yml`, insert after the `nuget` entry:
 ```yaml
-  # Erhöht global.json. Im selben PR DevContainer-Version und Android-Lock-Datei nachziehen (docs/SICHERHEIT.md 6.3)
+  # Bumps global.json. Update the DevContainer version and the Android lock file in the same PR (docs/SICHERHEIT.md 6.3)
   - package-ecosystem: dotnet-sdk
     directory: /
     schedule:
@@ -162,13 +162,13 @@ In `.github/dependabot.yml`, insert after the `nuget` entry:
 
 ### Step 7: Documentation
 In `docs/SICHERHEIT.md`:
-- Ch. 6.3 gets this new bullet:
+- Ch. 6.3 gets this new bullet (in English, although the chapter is still German):
   ```markdown
-  - **.NET SDK exakt festgelegt:** `global.json` nennt die Version (einzige Quelle). DevContainer und Android-CI installieren genau diese und prüfen das, weil die Android-Lock-Datei `Microsoft.NET.ILLink.Tasks` in der Runtime-Version des SDK enthält. Ablauf bei einem SDK-Update (Dependabot-PR für `global.json`): `DOTNET_SDK_VERSION` in `.devcontainer/Dockerfile` angleichen, Container neu bauen, `dotnet restore src/FamilyHome.Client.Android --force-evaluate`, Lock-Datei im selben PR committen. Bis dahin ist der Android-Check rot, Auto-Merge greift also nicht.
+  - **.NET SDK pinned exactly:** `global.json` names the version (single source). The DevContainer and the Android CI jobs install exactly this version and check it, because the Android lock file contains `Microsoft.NET.ILLink.Tasks` in the runtime version of the SDK. Procedure for an SDK update (Dependabot PR for `global.json`): align `DOTNET_SDK_VERSION` in `.devcontainer/Dockerfile`, rebuild the container, run `dotnet restore src/FamilyHome.Client.Android --force-evaluate`, commit the lock file in the same PR. Until then the Android check is red, so auto-merge does not apply.
   ```
 - In the workflow table, change the `devcontainer.yml` row:
-  - trigger: `Änderung an .devcontainer/ oder global.json, wöchentlich`;
-  - append `, SDK-Version = global.json` to the description.
+  - trigger: `change to .devcontainer/ or global.json, weekly`;
+  - append `, SDK version = global.json` to the description.
 
 ## Checks (before the PR, all must pass)
 - [ ] `scripts/security-gate.sh` is green (it includes actionlint, zizmor, hadolint and locked restore, among others).
@@ -180,15 +180,15 @@ In `docs/SICHERHEIT.md`:
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
 - [ ] All 10 required checks on the PR are green.
-- [ ] In the log of the "Android-APK" check, the step "SDK-Version prüfen" shows `10.0.403` and the step "Restore (Locked Mode)" is green.
-- [ ] The "DevContainer" workflow ran on the PR (because of `.devcontainer/**` or `global.json`) and is green, including "SDK-Version wie in global.json".
+- [ ] In the log of the "Android-APK" check, the step "Check SDK version" shows `10.0.403` and the step "Restore (locked mode)" is green.
+- [ ] The "DevContainer" workflow ran on the PR (because of `.devcontainer/**` or `global.json`) and is green, including "SDK version matches global.json".
 - [ ] The PR is marked as security-relevant (pipeline, supply chain).
 
 ## Stop conditions
 **Stop immediately**, set `status: blocked`, write what you found into the log and ask the owner if:
 - a check in step 1 gives a different result, especially another lock file that changed or an ILLink version ≠ runtime version;
 - `dotnet --version` in the DevContainer is not `10.0.403`;
-- "SDK-Version prüfen" shows a different version in CI. That would mean `DOTNET_INSTALL_DIR` does not work as expected. Do not work around it with other tricks;
+- "Check SDK version" shows a different version in CI. That would mean `DOTNET_INSTALL_DIR` does not work as expected. Do not work around it with other tricks;
 - zizmor, actionlint, Semgrep or hadolint report anything. Do not suppress it with an ignore;
 - `dotnet-sdk` is not a valid Dependabot ecosystem;
 - a file outside the allowed list would have to change;
