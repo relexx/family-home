@@ -5,7 +5,7 @@
   "workspaceFolder": "/workspaces/FamilyHome",
   "remoteUser": "vscode",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": { "version": "lts" },
+    "ghcr.io/devcontainers/features/node:2": { "version": "lts" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     // Docker für Testcontainers in den Server-Integrationstests
