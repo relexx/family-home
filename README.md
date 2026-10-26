@@ -1,18 +1,17 @@
 # FamilyHome
 
-<!-- TODO: OWNER durch den GitHub-Benutzer/die Organisation ersetzen, sobald das Repo existiert (wie in .github/CODEOWNERS) -->
 [![Lizenz: Apache 2.0](https://img.shields.io/badge/Lizenz-Apache_2.0-blue.svg)](LICENSE)
 [![Status: in Entwicklung](https://img.shields.io/badge/Status-in_Entwicklung-orange.svg)](docs/SPEZIFIKATION.md#10-phasenplan)
 [![Plattform: Android 13+](https://img.shields.io/badge/Android-13%2B-3DDC84.svg?logo=android&logoColor=white)](#2-die-app-installieren)
 [![.NET 10](https://img.shields.io/badge/.NET-10_LTS-512BD4.svg?logo=dotnet&logoColor=white)](global.json)
 [![Kein Tracking](https://img.shields.io/badge/Tracking-keins-success.svg)](docs/SICHERHEIT.md#4-daten)
 
-[![CI](https://github.com/OWNER/FamilyHome/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/OWNER/FamilyHome/actions/workflows/ci.yml)
-[![Security Lint](https://github.com/OWNER/FamilyHome/actions/workflows/security-lint.yml/badge.svg?branch=main)](https://github.com/OWNER/FamilyHome/actions/workflows/security-lint.yml)
-[![CodeQL](https://github.com/OWNER/FamilyHome/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/OWNER/FamilyHome/actions/workflows/codeql.yml)
-[![Server-Container](https://github.com/OWNER/FamilyHome/actions/workflows/container.yml/badge.svg?branch=main)](https://github.com/OWNER/FamilyHome/actions/workflows/container.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/OWNER/FamilyHome/badge)](https://securityscorecards.dev/viewer/?uri=github.com/OWNER/FamilyHome)
-[![Release](https://img.shields.io/github/v/release/OWNER/FamilyHome?include_prereleases&label=Release)](https://github.com/OWNER/FamilyHome/releases)
+[![CI](https://github.com/relexx/family-home/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/relexx/family-home/actions/workflows/ci.yml)
+[![Security Lint](https://github.com/relexx/family-home/actions/workflows/security-lint.yml/badge.svg?branch=main)](https://github.com/relexx/family-home/actions/workflows/security-lint.yml)
+[![CodeQL](https://github.com/relexx/family-home/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/relexx/family-home/actions/workflows/codeql.yml)
+[![Server-Container](https://github.com/relexx/family-home/actions/workflows/container.yml/badge.svg?branch=main)](https://github.com/relexx/family-home/actions/workflows/container.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/relexx/family-home/badge)](https://securityscorecards.dev/viewer/?uri=github.com/relexx/family-home)
+[![Release](https://img.shields.io/github/v/release/relexx/family-home?include_prereleases&label=Release)](https://github.com/relexx/family-home/releases)
 
 **Der gemeinsame Familienplaner für Android: Termine, Einkaufslisten, Freunde der Kinder und alles, was ihr im Alltag sucht, an einem Ort und nur bei euch.**
 
@@ -191,7 +190,7 @@ Der Server muss vom Handy aus erreichbar sein. In der Entwicklung bedeutet das: 
 
 ### GitHub einrichten (einmalig)
 
-1. Repository anlegen und in `.github/CODEOWNERS`, `deploy/.env` und den Badges oben in diesem README den Platzhalter `OWNER` ersetzen.
+1. Repository: <https://github.com/relexx/family-home> (Owner `relexx` ist in `.github/CODEOWNERS`, `deploy/.env.example` und den Badges eingetragen).
 2. Repo **öffentlich** stellen. **Settings → Code security:** Secret Scanning + Push Protection, Dependabot Alerts/Security Updates und Private Vulnerability Reporting aktivieren.
 3. **Rulesets für `main`:**
    - PR-Pflicht, Pflicht-Checks (CI, Security Lint, CodeQL, Dependency Review), signierte Commits, DCO;

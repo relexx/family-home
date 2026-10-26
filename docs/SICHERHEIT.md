@@ -125,7 +125,7 @@ Internet ──443──► Caddy (Let's Encrypt, TLS 1.3, client_auth: Familien
 
 ### 5.2 Server-Updates bei Selbst-Hostern
 - **Offizielles Image:**
-  - `ghcr.io/<org>/familyhome-server`, **Multi-Arch** (amd64 und arm64 für NAS/Raspberry Pi);
+  - `ghcr.io/relexx/familyhome-server`, **Multi-Arch** (amd64 und arm64 für NAS/Raspberry Pi);
   - chiseled (ohne Shell und Paketmanager), Nicht-Root, Read-only-Root-Dateisystem;
   - **wöchentlich neu gebaut** (Basis-Image-Patches);
   - **cosign-signiert** (keyless, gebunden an den Release-Workflow dieses Repos), mit **SBOM + SLSA-Provenance**.
