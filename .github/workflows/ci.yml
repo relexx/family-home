@@ -45,7 +45,7 @@ jobs:
 
       # Locked Mode + NuGetAudit (Fehler ab "moderate") sind in Directory.Build.props für CI=true aktiv
       - name: Restore
-        run: for p in $PROJECTS; do dotnet restore "$p"; done
+        run: for p in $PROJECTS; do dotnet restore "$p" --locked-mode; done
 
       - name: Format prüfen
         run: for p in $PROJECTS; do dotnet format "$p" --verify-no-changes --no-restore; done

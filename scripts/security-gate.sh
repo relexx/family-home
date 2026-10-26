@@ -35,7 +35,7 @@ run() {
 
 dotnet_build() {
   for p in "${PROJECTS[@]}"; do
-    CI=true dotnet restore "$p" >/dev/null || return 1
+    dotnet restore "$p" --locked-mode >/dev/null || return 1
     dotnet build "$p" -c Release --no-restore -warnaserror -nologo -clp:ErrorsOnly || return 1
   done
 }

@@ -1,0 +1,48 @@
+name: DevContainer
+
+# Baut das DevContainer-Image bei Änderungen (und wöchentlich), damit die Entwicklungsumgebung nicht unbemerkt bricht.
+on:
+  pull_request:
+    paths: [".devcontainer/**", ".github/workflows/devcontainer.yml"]
+  push:
+    branches: [main]
+    paths: [".devcontainer/**", ".github/workflows/devcontainer.yml"]
+  schedule:
+    - cron: "37 3 * * 0"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+    name: DevContainer-Image bauen
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Image bauen
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .devcontainer
+          load: true
+          tags: familyhome-devcontainer:ci
+
+      - name: Werkzeuge im Image prüfen
+        run: |
+          docker run --rm familyhome-devcontainer:ci bash -lc '
+            set -e
+            dotnet --version
+            dotnet workload list | grep -q android
+            java -version 2>&1 | head -1
+            sdkmanager --list_installed | grep -E "platforms;|build-tools;|platform-tools"
+            pipx --version'

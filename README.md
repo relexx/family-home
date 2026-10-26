@@ -162,7 +162,7 @@ Voraussetzung: Docker und VS Code mit der Extension „Dev Containers“ (oder d
 2. Der Container enthält:
    - .NET 10 SDK mit Android-Workload, JDK 17, Android SDK (API 36), `adb`, `dotnet-ef`
    - Claude Code (CLI und VS-Code-Extension); die Konfiguration liegt im Volume `claude-config` und bleibt erhalten
-   - PostgreSQL 17 (Service `db`) und Radicale als CalDAV/CardDAV-Testserver (Service `radicale`, Port 5232)
+   - PostgreSQL 18 (Service `db`) und Radicale als CalDAV/CardDAV-Testserver (Service `radicale`, Port 5232)
    - einen leichten Desktop per noVNC auf <http://localhost:6080> (Passwort `vscode`) für die Avalonia-Desktop-Variante
 3. Claude starten: im Terminal des Containers `claude` aufrufen.
 
