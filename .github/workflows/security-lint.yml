@@ -45,7 +45,7 @@ jobs:
             --config p/csharp --config p/secrets --config p/dockerfile --config p/github-actions --config .semgrep/ \
             --error
       - if: always()
-        uses: github/codeql-action/upload-sarif@8498dc4c2b27cdd99baf0f87955b29ebbf30c78d # v4.39.1
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: semgrep.sarif
           category: semgrep
@@ -66,7 +66,7 @@ jobs:
       - name: zizmor
         run: pipx run zizmor==1.31.1 --format sarif .github/workflows > zizmor.sarif
       - if: always()
-        uses: github/codeql-action/upload-sarif@8498dc4c2b27cdd99baf0f87955b29ebbf30c78d # v4.39.1
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: zizmor.sarif
           category: zizmor
