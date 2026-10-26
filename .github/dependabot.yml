@@ -33,6 +33,13 @@ updates:
     directories: ["/deploy", "/.devcontainer"]
     schedule:
       interval: weekly
+    ignore:
+      # Architektur-Tags "386.x.y.z" sind keine Versionen
+      - dependency-name: tomsquest/docker-radicale
+        versions: [">= 100"]
+      # PostgreSQL-Major-Updates nur bewusst mit Upgrade-Skript (docs/SICHERHEIT.md 5.2)
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: devcontainers
     directory: /

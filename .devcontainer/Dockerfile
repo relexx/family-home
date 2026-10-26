@@ -1,5 +1,5 @@
 # FamilyHome DevContainer: .NET 10 + Android-Workload + JDK 17 + Android SDK
-FROM mcr.microsoft.com/devcontainers/base:1-ubuntu-24.04
+FROM mcr.microsoft.com/devcontainers/base:2.0-ubuntu-24.04@sha256:d94c97dd9cacf183d0a6fd12a8e87b526e9e928307674ae9c94139139c0c6eae
 
 ARG DOTNET_CHANNEL=10.0
 ARG ANDROID_CMDLINE_TOOLS=16111833
@@ -38,7 +38,8 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools \
     && unzip -q /tmp/clt.zip -d ${ANDROID_HOME}/cmdline-tools \
     && mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest \
     && rm /tmp/clt.zip \
-    && yes | sdkmanager --licenses > /dev/null \
+    # "yes" endet mit SIGPIPE, sobald sdkmanager fertig ist – mit pipefail sonst Exit 141
+    && (yes || true) | sdkmanager --licenses > /dev/null \
     && sdkmanager "platform-tools" "platforms;${ANDROID_PLATFORM}" "build-tools;${ANDROID_BUILD_TOOLS}" \
     && chown -R vscode:vscode ${ANDROID_HOME}
 

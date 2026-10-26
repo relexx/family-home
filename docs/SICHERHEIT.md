@@ -176,6 +176,7 @@ Internet ──443──► Caddy (Let's Encrypt, TLS 1.3, client_auth: Familien
 | `codeql.yml` | PR, Push, wöchentlich | CodeQL für C# und Actions (`security-extended`) |
 | `dependency-review.yml` | PR | Blockiert Abhängigkeiten mit Schwachstellen ab „moderate“ sowie inkompatible Lizenzen (GPL/AGPL; Apache-2.0-kompatibel bleiben) |
 | `container.yml` | Push `main`, wöchentlich | Multi-Arch-Image, **Grype-Scan** (bricht bei High/Critical ab), GHCR, cosign, SBOM, Provenance |
+| `devcontainer.yml` | Änderung an `.devcontainer/`, wöchentlich | DevContainer-Image bauen und Werkzeuge prüfen (.NET + Android-Workload, JDK, Android SDK) |
 | `release-android.yml` | Tag `v*` | Signierte APKs (Play/Direct), signiertes Update-Manifest, Provenance, GitHub Release |
 | `scorecard.yml` | wöchentlich | OpenSSF Scorecard |
 | Dependabot | täglich/wöchentlich | NuGet, Actions, Docker, Compose, DevContainer |
