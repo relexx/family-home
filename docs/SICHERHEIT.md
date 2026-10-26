@@ -225,6 +225,7 @@ Jede Code- oder Architekturänderung muss dieses Gate durchlaufen, **lokal vor d
 - Der DevContainer läuft ohne Zugriff auf Host-Geheimnisse und ohne SSH-Agent-Weiterleitung.
 - **Egress-Firewall** für den DevContainer (Phase 0), nach dem Vorbild der Referenz-DevContainer-Konfiguration von Anthropic. Ausgehend erlaubt sind nur nuget.org, `dl.google.com`/Google Maven, GitHub/GHCR, die Anthropic-API, npm/PyPI und die .NET-Download-Server.
 - Claude arbeitet auf Feature-Branches, führt das Security Gate aus und öffnet PRs. Merges nach `main` laufen nur über die Pflicht-Checks und deine Freigabe.
+- Weitere KI-Worker (VS-Code-Extensions Cline und Kilo Code) arbeiten nach denselben Regeln über Arbeitspakete (`work/`, siehe `CLAUDE.md`). Ihre Modell-Verbindung wird nur lokal in der Extension eingerichtet, nie im Repo; ein Modell-Server auf dem Host ist aus dem Container über `host.docker.internal` erreichbar und muss bei der Egress-Firewall berücksichtigt werden.
 - Release-Signaturschlüssel sind **nie** im DevContainer.
 
 ---
