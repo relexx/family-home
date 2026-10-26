@@ -12,10 +12,18 @@ git commit -s -m "Beschreibung"
 
 Mit dem Sign-off bestätigst du, dass du den Beitrag unter der Projektlizenz einreichen darfst.
 
+Der Pflicht-Check **DCO** prüft jeden Commit im PR. Die Sign-off-Adresse muss mit der Autor-E-Mail übereinstimmen. Fehlt der Sign-off, lässt er sich nachträglich ergänzen:
+
+```bash
+git rebase --signoff origin/main
+```
+
+Gemergt wird ausschließlich per **Squash-Merge**.
+
 ## Ablauf
 
 1. Issue eröffnen oder an ein bestehendes anknüpfen. **Sicherheitslücken bitte nie öffentlich** melden, sondern wie in [SECURITY.md](SECURITY.md) beschrieben.
-2. Feature-Branch anlegen und Commits **signieren** (GPG/SSH) und mit Sign-off versehen.
+2. Feature-Branch anlegen und jeden Commit mit Sign-off versehen. Signierte Commits (GPG/SSH) sind empfohlen; auf `main` landet ohnehin ein von GitHub signierter Squash-Commit.
 3. **Security Gate lokal ausführen**, es muss grün sein:
 
    ```bash

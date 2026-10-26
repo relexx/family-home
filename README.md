@@ -188,17 +188,27 @@ dotnet build src/FamilyHome.Client.Android -t:Install
 
 Der Server muss vom Handy aus erreichbar sein. In der Entwicklung bedeutet das: die IP des Rechners und Port 5080, die von VS Code weitergeleitet werden.
 
-### GitHub einrichten (einmalig)
+### GitHub-Repository und Regeln
 
-1. Repository: <https://github.com/relexx/family-home> (Owner `relexx` ist in `.github/CODEOWNERS`, `deploy/.env.example` und den Badges eingetragen).
-2. Repo **öffentlich** stellen. **Settings → Code security:** Secret Scanning + Push Protection, Dependabot Alerts/Security Updates und Private Vulnerability Reporting aktivieren.
-3. **Rulesets für `main`:**
-   - PR-Pflicht, Pflicht-Checks (CI, Security Lint, CodeQL, Dependency Review), signierte Commits, DCO;
-   - kein Force-Push, CODEOWNERS-Review;
-   - Auto-Merge erlauben (für Dependabot-Patch-Updates).
-4. **Environment `release`:** dich als Pflicht-Reviewer eintragen, Deployment nur von Tags `v*`. Dort folgende Secrets anlegen:
-   - `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`, `ANDROID_KEYSTORE_PASS`;
-   - `UPDATE_MANIFEST_ED25519_PEM`, erzeugt mit `openssl genpkey -algorithm ed25519`. Der öffentliche Teil kommt in die App.
+Repository: <https://github.com/relexx/family-home> (öffentlich). Der Owner `relexx` ist in `.github/CODEOWNERS`, `deploy/.env.example` und den Badges eingetragen.
+
+**Aktiv unter Settings → Code security:** Dependabot Alerts und Security Updates, Secret Scanning mit Push Protection, Private Vulnerability Reporting.
+
+**Ruleset „main schützen“** (Settings → Rules):
+- Änderungen nur per **Pull Request**; Löschen und Force-Push sind verboten, der Verlauf bleibt linear.
+- **Signierte Commits** auf `main`. Erlaubt ist nur **Squash-Merge**; den Squash-Commit signiert GitHub selbst, sodass auch PRs mit unsignierten Einzelcommits gemergt werden können.
+- **Review durch einen CODEOWNER.** Kommentar-Threads müssen gelöst sein, und Reviews verfallen bei neuen Pushes.
+- **Ausnahme:** Repo-Admins dürfen das Review umgehen, **aber nur über einen PR**. Ohne diese Ausnahme könnte ein einzelner Maintainer seine eigenen PRs nie mergen. Direkte Pushes auf `main` bleiben auch für Admins gesperrt.
+- **Pflicht-Checks**, und der PR muss auf dem aktuellen Stand von `main` sein:
+  - Build (Analyzer = Fehler), Format, Audit, Test und Android-APK;
+  - Secrets (gitleaks), Semgrep, Workflows (zizmor, actionlint), Dockerfiles & Skripte (hadolint, ShellCheck);
+  - CodeQL (C# und Actions), Dependency Review;
+  - **DCO**: Jeder Commit braucht `Signed-off-by` mit der Autor-E-Mail (`git commit -s`). Bots wie Dependabot sind ausgenommen.
+- **Auto-Merge** ist erlaubt. Dependabot-Patch-Updates werden automatisch gemergt, **sobald ein Review vorliegt**.
+
+**Noch einzurichten: Environment `release`** (für Releases). Dich als Pflicht-Reviewer eintragen und Deployments nur von Tags `v*` erlauben. Dort folgende Secrets anlegen:
+- `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`, `ANDROID_KEYSTORE_PASS`;
+- `UPDATE_MANIFEST_ED25519_PEM`, erzeugt mit `openssl genpkey -algorithm ed25519`. Der öffentliche Teil kommt in die App.
 
 ### Selbst hosten (Entwurf)
 
