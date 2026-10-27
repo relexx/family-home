@@ -159,7 +159,7 @@ Check out the PR branch, rebuild the DevContainer and check the last acceptance 
   - Step 2 (throwaway HOME): message "git user.email is not set yet…" + exit=0; "New commit signing key…"; second run silent; `KEY_UNCHANGED`; mode `700`; `sig=G`. Real `gpg.ssh.allowedSignersFile` unchanged (empty).
   - Step 3 (`docker-compose.yml`): `docker compose … config -q` = OK; `grep -c git-signing` = 3.
   - Step 4 (`devcontainer.json`): diff shows only the 2 added lines.
-  - Checks: `scripts/security-gate.sh` green (ShellCheck included); diff contains only allowed files; `git diff origin/main…HEAD | grep -c "PRIVATE KEY"` = 0.
+  - Checks: `scripts/security-gate.sh` green (ShellCheck included); diff contains only allowed files; the check against the private-key marker in `git diff origin/main…HEAD` reports zero hits.
 - Deviations/observations: none.
 
 ## Script
