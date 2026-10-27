@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: in-review
 branch: wp/30936f54-devcontainer-commit-signing
 assignee: relexx
 depends_on: []
@@ -152,10 +152,15 @@ In `docs/SICHERHEIT.md` ch. 8, after the bullet `Der DevContainer läuft ohne Zu
 Check out the PR branch, rebuild the DevContainer and check the last acceptance criterion. Then, on the PR branch: set `status: done`, `git mv work/wp-30936f54-devcontainer-commit-signing.md work/archive/`, squash-merge.
 
 ## Log (filled in by the worker)
-- Date/assignee:
+- Date/assignee: 2026-10-27 / relexx (Claude)
 - PR:
 - Output of the checks (shortened):
-- Deviations/observations:
+  - Step 1 (script extraction): `head -1` = `#!/usr/bin/env bash`, `tail -1` = `fi`, `bash -n` = OK.
+  - Step 2 (throwaway HOME): message "git user.email is not set yet…" + exit=0; "New commit signing key…"; second run silent; `KEY_UNCHANGED`; mode `700`; `sig=G`. Real `gpg.ssh.allowedSignersFile` unchanged (empty).
+  - Step 3 (`docker-compose.yml`): `docker compose … config -q` = OK; `grep -c git-signing` = 3.
+  - Step 4 (`devcontainer.json`): diff shows only the 2 added lines.
+  - Checks: `scripts/security-gate.sh` green (ShellCheck included); diff contains only allowed files; `git diff origin/main…HEAD | grep -c "PRIVATE KEY"` = 0.
+- Deviations/observations: none.
 
 ## Script
 Tested; do not edit. Extract it with the command from step 1.
