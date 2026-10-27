@@ -48,6 +48,8 @@ If anything else has to change → **stop** (see below).
 
 ## Steps
 Each step: what to do, the exact command or change, and the expected result.
+Code blocks are written exactly as they go into the file or terminal, including leading spaces; copy the raw text unchanged.
+When writing a package: never indent code blocks under list items, and exclude `work/` from checks that grep the diff (the log mentions the check itself).
 
 ### Step 1: …
 - Do: …
@@ -56,6 +58,7 @@ Each step: what to do, the exact command or change, and the expected result.
 ## Checks (before the PR, all must pass)
 - [ ] `scripts/security-gate.sh` is green.
 - [ ] `git diff --name-only origin/main...HEAD` lists only allowed files.
+- [ ] Every commit is signed: `for c in $(git rev-list origin/main..HEAD); do git cat-file -p "$c" | grep -q 'BEGIN SSH SIGNATURE' || echo "UNSIGNED $c"; done` → no output. After pushing, the PR shows every commit as "Verified".
 - [ ] …
 
 ## Acceptance criteria ("done")
@@ -65,6 +68,8 @@ Each step: what to do, the exact command or change, and the expected result.
 
 ## Stop conditions
 If any of the following happens, **stop immediately**: set `status: blocked`, write what you found into the log and ask the owner. Do not improvise, weaken or suppress anything:
+- A commit cannot be signed. Never disable signing (`--no-gpg-sign`, `-c commit.gpgsign=false`).
+- A check cannot really run in your environment (e.g. a Security Gate step fails for environmental reasons). Report it as "not run" with the reason; never report it as green.
 - A change outside the allowed files would be needed.
 - A command gives a different result than expected.
 - The Security Gate or a CI check is red and the cause is not obviously a typo of your own.
@@ -74,6 +79,7 @@ If any of the following happens, **stop immediately**: set `status: blocked`, wr
 ## Completion by the worker
 1. Fill in the log, set `status: in-review`.
 2. Commit with `git commit -s`, push, open a PR against `main` that references this file. If the package is security-relevant, mark the PR accordingly.
+   Fill in the PR template (`.github/pull_request_template.md`) completely; a list of commits is not a description.
 3. Do not merge it yourself.
 
 ## Acceptance by the owner
