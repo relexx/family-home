@@ -161,6 +161,7 @@ Check out the PR branch, rebuild the DevContainer and check the last acceptance 
   - Step 4 (`devcontainer.json`): diff shows only the 2 added lines.
   - Checks: `scripts/security-gate.sh` green (ShellCheck included); diff contains only allowed files; the check against the private-key marker in `git diff origin/main…HEAD` reports zero hits.
 - Deviations/observations: none.
+- 2026-10-27: Minimal commit added on request to test the SSH commit signing.
 
 ## Script
 Tested; do not edit. Extract it with the command from step 1.
