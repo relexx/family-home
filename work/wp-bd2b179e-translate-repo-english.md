@@ -56,11 +56,11 @@ Today most of the repo is German. After this package, only the German resx file 
 
   UI names follow `Strings.en.resx` (tabs: Today, Calendar, Lists, People, More).
 - **New convention lines in `CLAUDE.md`** (replace the line `Code-Bezeichner Englisch, Kommentare und Doku Deutsch, UI-Texte nur über …`; copy exactly):
-  ```markdown
-  - Language: everything in the repo is English: code (including string literals such as log and exception messages), comments, documentation, work packages and other instructions for worker AIs, commit messages and PR texts.
-  - The app supports English and German: user-facing texts only via `Resources/Strings*.resx` (German neutral, English), never hard-coded.
-  - Chat with the owner is in German.
-  ```
+```markdown
+- Language: everything in the repo is English: code (including string literals such as log and exception messages), comments, documentation, work packages and other instructions for worker AIs, commit messages and PR texts.
+- The app supports English and German: user-facing texts only via `Resources/Strings*.resx` (German neutral, English), never hard-coded.
+- Chat with the owner is in German.
+```
   `CONTRIBUTING.md` gets the same first two rules.
 
 ## Out of scope
@@ -96,30 +96,30 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 
 ### Step 1: Record the baseline and create the code check
 - Do: save the heading counts of the docs and the number of TODO markers:
-  ```bash
-  for f in README.md CONTRIBUTING.md SECURITY.md CLAUDE.md docs/SPEZIFIKATION.md docs/SICHERHEIT.md docs/THREAT-MODEL.md; do
-    printf '%s %s\n' "$(grep -c '^#' "$f")" "$f"; done > "${TMPDIR:-/tmp}/wp-bd2b179e-headings.txt"
-  grep -rn "TODO Phase" src | wc -l > "${TMPDIR:-/tmp}/wp-bd2b179e-todos.txt"
-  ```
+```bash
+for f in README.md CONTRIBUTING.md SECURITY.md CLAUDE.md docs/SPEZIFIKATION.md docs/SICHERHEIT.md docs/THREAT-MODEL.md; do
+  printf '%s %s\n' "$(grep -c '^#' "$f")" "$f"; done > "${TMPDIR:-/tmp}/wp-bd2b179e-headings.txt"
+grep -rn "TODO Phase" src | wc -l > "${TMPDIR:-/tmp}/wp-bd2b179e-todos.txt"
+```
 - Do: create the check script (outside the repo). It fails if anything other than comments or string literals changed in a C#/AXAML file compared to a base commit:
-  ```bash
-  cat > "${TMPDIR:-/tmp}/wp-bd2b179e-codecheck.py" <<'EOF'
-  import re, subprocess, sys
-  base = sys.argv[1] if len(sys.argv) > 1 else "HEAD~1"
-  def norm(src):
-      src = re.sub(r'(?:\$@|@\$|\$|@)?"(?:""|\\.|[^"\\\n])*"', '""', src)
-      src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
-      src = re.sub(r'//[^\n]*', '', src)
-      src = re.sub(r'<!--.*?-->', '', src, flags=re.S)
-      return re.sub(r'\s+', ' ', src).strip()
-  names = subprocess.run(["git", "diff", "--name-only", "--diff-filter=M", base, "--", "*.cs", "*.axaml"],
-                         capture_output=True, text=True, check=True).stdout.split()
-  old = lambda n: subprocess.run(["git", "show", f"{base}:{n}"], capture_output=True, text=True, check=True).stdout
-  bad = [n for n in names if norm(old(n)) != norm(open(n, encoding="utf-8").read())]
-  print("\n".join(f"CODE CHANGED: {n}" for n in bad) or f"OK ({len(names)} files, only comments/strings changed)")
-  sys.exit(1 if bad else 0)
-  EOF
-  ```
+```bash
+cat > "${TMPDIR:-/tmp}/wp-bd2b179e-codecheck.py" <<'EOF'
+import re, subprocess, sys
+base = sys.argv[1] if len(sys.argv) > 1 else "HEAD~1"
+def norm(src):
+    src = re.sub(r'(?:\$@|@\$|\$|@)?"(?:""|\\.|[^"\\\n])*"', '""', src)
+    src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+    src = re.sub(r'//[^\n]*', '', src)
+    src = re.sub(r'<!--.*?-->', '', src, flags=re.S)
+    return re.sub(r'\s+', ' ', src).strip()
+names = subprocess.run(["git", "diff", "--name-only", "--diff-filter=M", base, "--", "*.cs", "*.axaml"],
+                       capture_output=True, text=True, check=True).stdout.split()
+old = lambda n: subprocess.run(["git", "show", f"{base}:{n}"], capture_output=True, text=True, check=True).stdout
+bad = [n for n in names if norm(old(n)) != norm(open(n, encoding="utf-8").read())]
+print("\n".join(f"CODE CHANGED: {n}" for n in bad) or f"OK ({len(names)} files, only comments/strings changed)")
+sys.exit(1 if bad else 0)
+EOF
+```
   It is a heuristic. If it reports a file, compare that file by hand (`git diff HEAD~1 -- <file>`). If code outside comments and string literals really differs: **stop**.
 
 ### Step 2: Rename the docs and update references (no translation yet)
@@ -133,11 +133,11 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 - Do: translate `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/SPECIFICATION.md`, `docs/SECURITY-CONCEPT.md`, `docs/THREAT-MODEL.md` and `.github/pull_request_template.md` completely. Replace "Kap." with "ch.". Keep code blocks, commands, tables, links and anchors working.
 - Check: compare the heading counts with step 1 (the renamed files under their new names) → identical.
 - Check that relative links resolve:
-  ```bash
-  for f in $(git ls-files '*.md' ':!work/archive'); do
-    grep -oE '\]\([^)#: ]+' "$f" | sed 's/^](//' | while read -r l; do
-      [ -e "$(dirname "$f")/$l" ] || echo "$f -> $l"; done; done
-  ```
+```bash
+for f in $(git ls-files '*.md' ':!work/archive'); do
+  grep -oE '\]\([^)#: ]+' "$f" | sed 's/^](//' | while read -r l; do
+    [ -e "$(dirname "$f")/$l" ] || echo "$f -> $l"; done; done
+```
   → no output.
 
 ### Step 4: Translate `CLAUDE.md` and add the language rules
@@ -149,9 +149,9 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 ### Step 5: Configuration, pipeline and deployment files
 - Do: translate comments (`#`, `<!-- -->`, `//`) and string literals/messages in `.github/**`, `.devcontainer/**`, `deploy/**`, `scripts/**`, `Directory.*.props`, `*.csproj`, `.editorconfig`, `.gitleaks.toml`, `.gitignore`, `.dockerignore`, Dockerfiles and Android XML resources; `message:` in `.semgrep/**`; the message after `;` in `BannedSymbols*.txt`. In workflows, also translate step names.
 - Check: no workflow or job name changed. This lists all `name:` lines of the diff:
-  ```bash
-  git diff -U0 HEAD~1 -- .github/workflows | grep -E '^[+-]\s*(- )?name:'
-  ```
+```bash
+git diff -U0 HEAD~1 -- .github/workflows | grep -E '^[+-]\s*(- )?name:'
+```
   → only step names (lines starting with `- name:` that are indented under `steps:`). If a workflow-level or job-level `name:` appears: revert it.
 - Check: in shell scripts and workflows, only comments, `echo`/`printf` texts and step names changed: `git diff HEAD~1 -- scripts deploy .devcontainer .github` and review every changed line.
 - Check: `scripts/security-gate.sh` is green (actionlint, zizmor, hadolint, ShellCheck, Semgrep).
@@ -176,6 +176,7 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 - [ ] All checks from steps 2–7 are fulfilled.
 - [ ] `git diff --name-only origin/main...HEAD | grep -E '\.resx$|packages\.lock\.json$|^work/archive/|^LICENSE$'` → no output.
 - [ ] No workflow or job `name:` changed (only step names, see step 5).
+- [ ] Every commit is signed: `for c in $(git rev-list origin/main..HEAD); do git cat-file -p "$c" | grep -q 'BEGIN SSH SIGNATURE' || echo "UNSIGNED $c"; done` → no output. After pushing, the PR shows every commit as "Verified".
 
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
@@ -185,6 +186,8 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
 
 ## Stop conditions
 **Stop immediately**, set `status: blocked`, write what you found into the log and ask the owner if:
+- a commit cannot be signed. Never disable signing (`--no-gpg-sign`, `-c commit.gpgsign=false`);
+- a check cannot really run in your environment (e.g. a Security Gate step fails for environmental reasons). Report it as "not run" with the reason; never report it as green;
 - the code check reports a real change outside comments and string literals;
 - a build, test, format check or the Security Gate fails and the cause is not a translated test expectation;
 - a workflow or job name would change;
@@ -199,6 +202,7 @@ Make **one commit per step** (`git commit -s`, English message), so that the PR 
    - title: `Translate repository to English (WP bd2b179e)`;
    - tick "security-relevant" in the PR template (text-only changes in workflows, CODEOWNERS and the security concept) and list the commits per step;
    - if the worker is a Claude model, the PR text ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+   - fill in the PR template (`.github/pull_request_template.md`) completely; a list of commits is not a description;
 3. Do not merge it yourself.
 
 ## Acceptance by the owner

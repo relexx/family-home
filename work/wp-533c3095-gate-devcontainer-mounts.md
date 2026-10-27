@@ -52,33 +52,33 @@ security_relevant: true  # Security Gate (pipeline tooling)
 
 ### Step 2: `devcontainer.json`
 - Do: in `.devcontainer/devcontainer.json`, add after the line `"postCreateCommand": …,`:
-  ```jsonc
-    // Host path of the repo: docker-outside-of-docker needs it for bind mounts (scripts/security-gate.sh)
-    "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
-  ```
+```jsonc
+  // Host path of the repo: docker-outside-of-docker needs it for bind mounts (scripts/security-gate.sh)
+  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
+```
 - Check: no other key changes (`git diff .devcontainer/devcontainer.json` shows only these 2 added lines).
 
 ### Step 3: `scripts/security-gate.sh`
 - Do: replace the line
-  ```bash
-  docker_run() { docker run --rm -v "$PWD:/src:ro" -w /src "$@"; }
-  ```
+```bash
+docker_run() { docker run --rm -v "$PWD:/src:ro" -w /src "$@"; }
+```
   with:
-  ```bash
-  # Source for bind mounts: inside the DevContainer (docker-outside-of-docker) the Docker daemon runs on the host and
-  # does not know the container path; devcontainer.json therefore sets LOCAL_WORKSPACE_FOLDER to the host path.
-  mount_source() {
-    if [[ -n "${LOCAL_WORKSPACE_FOLDER:-}" ]]; then printf '%s\n' "$LOCAL_WORKSPACE_FOLDER"
-    elif [[ -f /.dockerenv ]]; then
-      echo "LOCAL_WORKSPACE_FOLDER is not set: inside a container \$PWD is not a host path (rebuild the DevContainer)" >&2; return 1
-    else printf '%s\n' "$PWD"; fi
-  }
-  # --mount instead of -v: fails if the path is missing on the host instead of mounting an empty directory (false greens)
-  docker_run() {
-    local src; src=$(mount_source) || return 1
-    docker run --rm --mount "type=bind,source=$src,target=/src,readonly" -w /src "$@"
-  }
-  ```
+```bash
+# Source for bind mounts: inside the DevContainer (docker-outside-of-docker) the Docker daemon runs on the host and
+# does not know the container path; devcontainer.json therefore sets LOCAL_WORKSPACE_FOLDER to the host path.
+mount_source() {
+  if [[ -n "${LOCAL_WORKSPACE_FOLDER:-}" ]]; then printf '%s\n' "$LOCAL_WORKSPACE_FOLDER"
+  elif [[ -f /.dockerenv ]]; then
+    echo "LOCAL_WORKSPACE_FOLDER is not set: inside a container \$PWD is not a host path (rebuild the DevContainer)" >&2; return 1
+  else printf '%s\n' "$PWD"; fi
+}
+# --mount instead of -v: fails if the path is missing on the host instead of mounting an empty directory (false greens)
+docker_run() {
+  local src; src=$(mount_source) || return 1
+  docker run --rm --mount "type=bind,source=$src,target=/src,readonly" -w /src "$@"
+}
+```
 - Check: `grep -n -- '-v "\$PWD' scripts/security-gate.sh` → no output.
 
 ### Step 4: Test (positive)
@@ -100,7 +100,8 @@ scripts/security-gate.sh
 - [ ] Step 4 is green, steps 5 fail as described.
 - [ ] ShellCheck is part of the green run in step 4 (it checks the modified script).
 - [ ] `git diff --name-only origin/main...HEAD` lists only allowed files.
-- [ ] Neither the diff, the PR text nor the log contains the real host path (`git diff origin/main...HEAD | grep -c "/home/"` → `0`).
+- [ ] Neither the diff, the PR text nor the log contains the real host path (`git diff origin/main...HEAD -- . ':!work/' | grep -c "/home/"` → `0`; check the log in this file by eye).
+- [ ] Every commit is signed: `for c in $(git rev-list origin/main..HEAD); do git cat-file -p "$c" | grep -q 'BEGIN SSH SIGNATURE' || echo "UNSIGNED $c"; done` → no output. After pushing, the PR shows every commit as "Verified".
 
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
@@ -109,6 +110,8 @@ scripts/security-gate.sh
 
 ## Stop conditions
 **Stop immediately**, set `status: blocked`, write what you found into the log and ask the owner if:
+- a commit cannot be signed. Never disable signing (`--no-gpg-sign`, `-c commit.gpgsign=false`);
+- a check cannot really run in your environment (e.g. a Security Gate step fails for environmental reasons). Report it as "not run" with the reason; never report it as green;
 - step 1 does not reproduce the problem;
 - the variable from step 4 stays empty or the gate is not green in step 4;
 - a negative test in step 5 passes (false green);
@@ -121,6 +124,7 @@ scripts/security-gate.sh
    - title: `Security Gate: correct bind mounts inside the DevContainer (WP 533c3095)`;
    - tick "security-relevant" (pipeline tooling) in the PR template and mention the false-green risk that `--mount` removes;
    - if the worker is a Claude model, the PR text ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+   - fill in the PR template (`.github/pull_request_template.md`) completely; a list of commits is not a description;
 3. Do not merge it yourself.
 
 ## Acceptance by the owner
