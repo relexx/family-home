@@ -153,7 +153,7 @@ Check out the PR branch, rebuild the DevContainer and check the last acceptance 
 
 ## Log (filled in by the worker)
 - Date/assignee: 2026-10-27 / relexx (Claude)
-- PR:
+- PR: https://github.com/relexx/family-home/pull/13
 - Output of the checks (shortened):
   - Step 1 (script extraction): `head -1` = `#!/usr/bin/env bash`, `tail -1` = `fi`, `bash -n` = OK.
   - Step 2 (throwaway HOME): message "git user.email is not set yet…" + exit=0; "New commit signing key…"; second run silent; `KEY_UNCHANGED`; mode `700`; `sig=G`. Real `gpg.ssh.allowedSignersFile` unchanged (empty).
