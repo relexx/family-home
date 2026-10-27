@@ -1,7 +1,7 @@
 ---
-status: open
-branch:
-assignee:
+status: in-progress
+branch: wp/30936f54-devcontainer-commit-signing
+assignee: relexx
 depends_on: []
 security_relevant: true  # key material and commit signing in the development environment
 ---
