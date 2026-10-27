@@ -162,6 +162,7 @@ Check out the PR branch, rebuild the DevContainer and check the last acceptance 
   - Checks: `scripts/security-gate.sh` green (ShellCheck included); diff contains only allowed files; the check against the private-key marker in `git diff origin/main…HEAD` reports zero hits.
 - Deviations/observations: none.
 - 2026-10-27: Minimal commit added on request to test the SSH commit signing.
+- 2026-10-27: Second minimal commit on request to test the SSH commit signing again; it verifies locally with `%G?` = `G`.
 
 ## Script
 Tested; do not edit. Extract it with the command from step 1.
