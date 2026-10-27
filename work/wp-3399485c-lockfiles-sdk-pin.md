@@ -55,10 +55,10 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 - [ ] Work happens in the DevContainer.
 - [ ] `dotnet --version` prints `10.0.403`. If it prints anything else: **stop**.
 - [ ] On `main`, `git status --short` shows exactly these two lines:
-  ```
-  ?? .devcontainer/devcontainer-lock.json
-  ?? src/FamilyHome.Client.Android/packages.lock.json
-  ```
+```
+?? .devcontainer/devcontainer-lock.json
+?? src/FamilyHome.Client.Android/packages.lock.json
+```
 
 ## Claiming
 1. `git fetch origin --prune`
@@ -89,10 +89,10 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 ### Step 3: The DevContainer installs exactly this version
 In `.devcontainer/Dockerfile`:
 - Replace `ARG DOTNET_CHANNEL=10.0` with:
-  ```dockerfile
-  # Must match global.json (Android lock file, docs/SICHERHEIT.md 6.3); checked in devcontainer.yml
-  ARG DOTNET_SDK_VERSION=10.0.403
-  ```
+```dockerfile
+# Must match global.json (Android lock file, docs/SICHERHEIT.md 6.3); checked in devcontainer.yml
+ARG DOTNET_SDK_VERSION=10.0.403
+```
 - In the `# .NET SDK` section, replace `--channel ${DOTNET_CHANNEL}` with `--version ${DOTNET_SDK_VERSION}`.
 - Check: `grep -n DOTNET_ .devcontainer/Dockerfile`
   → `DOTNET_CHANNEL` no longer appears; `DOTNET_SDK_VERSION` appears exactly twice (ARG and usage).
@@ -101,14 +101,14 @@ In `.devcontainer/Dockerfile`:
 ### Step 4: `devcontainer.yml` checks the version
 - Do: add `"global.json"` to both `pull_request.paths` and `push.paths`.
 - Do: after the step `Werkzeuge im Image prüfen`, append a new step:
-  ```yaml
-      - name: SDK version matches global.json
-        run: |
-          expected="$(jq -r .sdk.version global.json)"
-          actual="$(docker run --rm familyhome-devcontainer:ci dotnet --version)"
-          echo "global.json: $expected, Image: $actual"
-          test "$expected" = "$actual"
-  ```
+```yaml
+    - name: SDK version matches global.json
+      run: |
+        expected="$(jq -r .sdk.version global.json)"
+        actual="$(docker run --rm familyhome-devcontainer:ci dotnet --version)"
+        echo "global.json: $expected, Image: $actual"
+        test "$expected" = "$actual"
+```
 
 ### Step 5: The Android jobs use exactly this version
 In `.github/workflows/ci.yml` (`android` job only) and in `.github/workflows/release-android.yml`, replace this block:
@@ -163,9 +163,9 @@ In `.github/dependabot.yml`, insert after the `nuget` entry:
 ### Step 7: Documentation
 In `docs/SICHERHEIT.md`:
 - Ch. 6.3 gets this new bullet (in English, although the chapter is still German):
-  ```markdown
-  - **.NET SDK pinned exactly:** `global.json` names the version (single source). The DevContainer and the Android CI jobs install exactly this version and check it, because the Android lock file contains `Microsoft.NET.ILLink.Tasks` in the runtime version of the SDK. Procedure for an SDK update (Dependabot PR for `global.json`): align `DOTNET_SDK_VERSION` in `.devcontainer/Dockerfile`, rebuild the container, run `dotnet restore src/FamilyHome.Client.Android --force-evaluate`, commit the lock file in the same PR. Until then the Android check is red, so auto-merge does not apply.
-  ```
+```markdown
+- **.NET SDK pinned exactly:** `global.json` names the version (single source). The DevContainer and the Android CI jobs install exactly this version and check it, because the Android lock file contains `Microsoft.NET.ILLink.Tasks` in the runtime version of the SDK. Procedure for an SDK update (Dependabot PR for `global.json`): align `DOTNET_SDK_VERSION` in `.devcontainer/Dockerfile`, rebuild the container, run `dotnet restore src/FamilyHome.Client.Android --force-evaluate`, commit the lock file in the same PR. Until then the Android check is red, so auto-merge does not apply.
+```
 - In the workflow table, change the `devcontainer.yml` row:
   - trigger: `change to .devcontainer/ or global.json, weekly`;
   - append `, SDK version = global.json` to the description.
@@ -176,6 +176,7 @@ In `docs/SICHERHEIT.md`:
 - [ ] `dotnet build src/FamilyHome.Client.Android -c Debug` runs without warnings.
 - [ ] `git diff --name-only origin/main...HEAD` lists only allowed files.
 - [ ] `git log origin/main..HEAD --format=%B | grep -c "Signed-off-by"` is at least the number of commits.
+- [ ] Every commit is signed: `for c in $(git rev-list origin/main..HEAD); do git cat-file -p "$c" | grep -q 'BEGIN SSH SIGNATURE' || echo "UNSIGNED $c"; done` → no output. After pushing, the PR shows every commit as "Verified".
 
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
@@ -186,6 +187,8 @@ In `docs/SICHERHEIT.md`:
 
 ## Stop conditions
 **Stop immediately**, set `status: blocked`, write what you found into the log and ask the owner if:
+- a commit cannot be signed. Never disable signing (`--no-gpg-sign`, `-c commit.gpgsign=false`);
+- a check cannot really run in your environment (e.g. a Security Gate step fails for environmental reasons). Report it as "not run" with the reason; never report it as green;
 - a check in step 1 gives a different result, especially another lock file that changed or an ILLink version ≠ runtime version;
 - `dotnet --version` in the DevContainer is not `10.0.403`;
 - "Check SDK version" shows a different version in CI. That would mean `DOTNET_INSTALL_DIR` does not work as expected. Do not work around it with other tricks;
@@ -200,6 +203,7 @@ In `docs/SICHERHEIT.md`:
    - title: `Commit lock files, pin .NET SDK exactly for Android (WP 3399485c)`;
    - in the PR template, tick "security-relevant" (pipeline, supply chain) and briefly summarize the decision from "Background";
    - if the worker is a Claude model, the PR text ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+   - fill in the PR template (`.github/pull_request_template.md`) completely; a list of commits is not a description;
 3. Do not merge it yourself.
 
 ## Acceptance by the owner

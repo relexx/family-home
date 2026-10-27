@@ -67,9 +67,9 @@ Exactly the 9 files in the patch, plus this work package file:
 
 ### Step 1: Extract and check the patch
 - Do: write the patch from the section "Patch" at the end of this file into a temporary file:
-  ```bash
-  awk '/^```diff$/{f=1;next} /^```$/{f=0} f' work/wp-d188095c-localize-ui-texts.md > "${TMPDIR:-/tmp}/wp-d188095c.patch"
-  ```
+```bash
+awk '/^```diff$/{f=1;next} /^```$/{f=0} f' work/wp-d188095c-localize-ui-texts.md > "${TMPDIR:-/tmp}/wp-d188095c.patch"
+```
 - Check: `git apply --check "${TMPDIR:-/tmp}/wp-d188095c.patch" && echo OK` → `OK`.
   If it fails (the files changed on `main` since this package was written): **stop**. Do not edit the patch by hand.
 
@@ -101,6 +101,7 @@ Exactly the 9 files in the patch, plus this work package file:
 - [ ] `scripts/security-gate.sh` is green.
 - [ ] Steps 3–5 fulfilled.
 - [ ] `git diff --name-only origin/main...HEAD` lists only allowed files.
+- [ ] Every commit is signed: `for c in $(git rev-list origin/main..HEAD); do git cat-file -p "$c" | grep -q 'BEGIN SSH SIGNATURE' || echo "UNSIGNED $c"; done` → no output. After pushing, the PR shows every commit as "Verified".
 
 ## Acceptance criteria ("done")
 - [ ] All checks passed.
@@ -109,6 +110,8 @@ Exactly the 9 files in the patch, plus this work package file:
 
 ## Stop conditions
 **Stop immediately**, set `status: blocked`, write what you found into the log and ask the owner if:
+- a commit cannot be signed. Never disable signing (`--no-gpg-sign`, `-c commit.gpgsign=false`);
+- a check cannot really run in your environment (e.g. a Security Gate step fails for environmental reasons). Report it as "not run" with the reason; never report it as green;
 - `git apply --check` fails;
 - the build reports a warning or error, or a test fails (except during step 4);
 - the negative test in step 4 does **not** fail;
@@ -121,6 +124,7 @@ Exactly the 9 files in the patch, plus this work package file:
    - title: `Localize holiday names and hard-coded UI texts (WP d188095c)`;
    - mention in the PR that `Holiday.NameDe` was removed;
    - if the worker is a Claude model, the PR text ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+   - fill in the PR template (`.github/pull_request_template.md`) completely; a list of commits is not a description;
 3. Do not merge it yourself.
 
 ## Acceptance by the owner
