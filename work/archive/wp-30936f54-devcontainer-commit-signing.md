@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 branch: wp/30936f54-devcontainer-commit-signing
 assignee: relexx
 depends_on: []
