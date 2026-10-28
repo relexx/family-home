@@ -223,6 +223,7 @@ Jede Code- oder Architekturänderung muss dieses Gate durchlaufen, **lokal vor d
 ## 8. Entwicklungsumgebung & KI-Agent
 
 - Der DevContainer läuft ohne Zugriff auf Host-Geheimnisse und ohne SSH-Agent-Weiterleitung.
+- **Commit signing:** `.devcontainer/setup-signing.sh` creates a dedicated SSH key without a passphrase on the volume `git-signing` (once, kept across rebuilds) and configures git to sign every commit. The owner registers it on GitHub by hand as a *Signing Key*; the container may not register keys itself. "Verified" therefore means "created in the owner's DevContainer", not "written by the owner"; required checks and the owner's merge remain the control. Rotation: delete the volume, rebuild, register the new key, remove the old one on GitHub.
 - **Egress-Firewall** für den DevContainer (Phase 0), nach dem Vorbild der Referenz-DevContainer-Konfiguration von Anthropic. Ausgehend erlaubt sind nur nuget.org, `dl.google.com`/Google Maven, GitHub/GHCR, die Anthropic-API, npm/PyPI und die .NET-Download-Server.
 - Claude arbeitet auf Feature-Branches, führt das Security Gate aus und öffnet PRs. Merges nach `main` laufen nur über die Pflicht-Checks und deine Freigabe.
 - Additional AI workers (VS Code extensions Cline and Kilo Code) follow the same rules via work packages (`work/`, see `CLAUDE.md`). Their model connection is configured only locally in the extension, never in the repo; a model server on the host is reachable from the container via `host.docker.internal` and must be taken into account for the egress firewall.

@@ -10,6 +10,8 @@ services:
       - ..:/workspaces/FamilyHome:cached
       - nuget-cache:/home/vscode/.nuget
       - claude-config:/home/vscode/.claude
+      # Commit signing key (.devcontainer/setup-signing.sh), survives rebuilds
+      - git-signing:/home/vscode/.signing
     environment:
       ConnectionStrings__FamilyHome: "Host=db;Port=5432;Database=familyhome;Username=familyhome;Password=familyhome"
       ASPNETCORE_ENVIRONMENT: Development
@@ -42,5 +44,6 @@ services:
 volumes:
   nuget-cache:
   claude-config:
+  git-signing:
   pg-data:
   radicale-data:
