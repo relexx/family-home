@@ -4,6 +4,8 @@
   "service": "workspace",
   "workspaceFolder": "/workspaces/FamilyHome",
   "remoteUser": "vscode",
+  // Commit signing on every start; idempotent, never replaces an existing key
+  "postStartCommand": "bash .devcontainer/setup-signing.sh",
   "features": {
     "ghcr.io/devcontainers/features/node:2": { "version": "lts" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
