@@ -32,7 +32,7 @@
     <PackageVersion Include="Ical.Net" Version="5.2.3" />
   </ItemGroup>
   <ItemGroup Label="Analyzer (Security Gate)">
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.317" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.318" />
     <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" />
   </ItemGroup>
   <ItemGroup Label="Tests">
