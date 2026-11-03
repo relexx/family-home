@@ -4,10 +4,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="Avalonia (Versionen synchron halten!)">
-    <PackageVersion Include="Avalonia" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageVersion Include="Avalonia" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.5" />
     <PackageVersion Include="Avalonia.Android" Version="12.1.4" />
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
   </ItemGroup>
