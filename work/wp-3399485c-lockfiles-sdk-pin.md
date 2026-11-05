@@ -2,16 +2,14 @@
 status: open
 branch:
 assignee:
-depends_on: [533c3095]   # the Security Gate must work inside the DevContainer first
+depends_on: []           # requires PR #23 (DevContainer hardening), see Preconditions
 security_relevant: true  # pipeline (workflows) and supply chain (lock files, SDK)
 ---
 
 # Commit the lock files and pin the .NET SDK exactly for Android
 
 ## Goal
-The two untracked lock files go into the repo:
-- `.devcontainer/devcontainer-lock.json` pins the DevContainer features;
-- `src/FamilyHome.Client.Android/packages.lock.json` enables locked restore for Android as well.
+The untracked Android lock file `src/FamilyHome.Client.Android/packages.lock.json` goes into the repo and enables locked restore for Android as well. (`.devcontainer/devcontainer-lock.json` is already committed by PR #23.)
 
 To keep the Android build in CI from breaking on every SDK patch as a result, the SDK version is pinned exactly in one place (`global.json`). The DevContainer and the Android CI jobs use exactly that version and check it.
 
@@ -39,7 +37,6 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 - No change to any other `packages.lock.json`.
 
 ## Allowed files
-- `.devcontainer/devcontainer-lock.json` (new, content unchanged)
 - `src/FamilyHome.Client.Android/packages.lock.json` (new, content unchanged)
 - `global.json`
 - `.devcontainer/Dockerfile`
@@ -51,36 +48,31 @@ To keep the Android build in CI from breaking on every SDK patch as a result, th
 - this work package file
 
 ## Preconditions
-- [ ] Work package 533c3095 is in `work/archive/`.
+- [ ] PR #23 (DevContainer hardening) is merged: `gh pr view 23 --json state -q .state` prints `MERGED`. The DevContainer has been rebuilt since (`command -v gitleaks` prints a path).
 - [ ] Work happens in the DevContainer.
 - [ ] `dotnet --version` prints `10.0.403`. If it prints anything else: **stop**.
-- [ ] On `main`, `git status --short` shows exactly these two lines:
+- [ ] On `main`, `git status --short` shows exactly this line:
 ```
-?? .devcontainer/devcontainer-lock.json
 ?? src/FamilyHome.Client.Android/packages.lock.json
 ```
 
 ## Claiming
 1. `git fetch origin --prune`
 2. `git branch -a --list "*wp/3399485c*"` and `gh pr list --state all --head wp/3399485c-lockfiles-sdk-pin` must both be empty, and `status` must be `open`. Otherwise **do not start**.
-3. `git switch -c wp/3399485c-lockfiles-sdk-pin`. The two untracked files come along.
+3. `git switch -c wp/3399485c-lockfiles-sdk-pin`. The untracked file comes along.
 4. In the front matter, set `status: in-progress`, `branch: wp/3399485c-lockfiles-sdk-pin` and `assignee`.
 5. `git commit -s -m "WP 3399485c: claimed" work/wp-3399485c-lockfiles-sdk-pin.md && git push -u origin HEAD`
 
 ## Steps
 
-### Step 1: Check the lock files
-- Check: `jq -r '.features | keys[]' .devcontainer/devcontainer-lock.json`
-  → exactly the 5 features from `.devcontainer/devcontainer.json`: `claude-code:1`, `desktop-lite:1`, `docker-outside-of-docker:1`, `github-cli:1`, `node:2`.
-- Check: `jq -r '.features[] | .resolved' .devcontainer/devcontainer-lock.json`
-  → every line ends in `@sha256:` followed by 64 hex characters.
+### Step 1: Check the lock file
 - Check: `CI=true dotnet restore src/FamilyHome.Client.Android --locked-mode`
   → finishes without errors and reports `Restored …FamilyHome.Client.Android.csproj`.
 - Check: `jq -r '.dependencies[]["Microsoft.NET.ILLink.Tasks"].resolved' src/FamilyHome.Client.Android/packages.lock.json`
   → must show the same version as `dotnet --list-runtimes | grep NETCore.App` (currently `10.0.14`).
 - Check: `dotnet restore FamilyHome.slnx`, then `git status --short`
-  → no change apart from the two new files, in particular no other `packages.lock.json` changed.
-- Do: `git add .devcontainer/devcontainer-lock.json src/FamilyHome.Client.Android/packages.lock.json`
+  → no change apart from the new file, in particular no other `packages.lock.json` changed.
+- Do: `git add src/FamilyHome.Client.Android/packages.lock.json`
 
 ### Step 2: `global.json`
 - Do: `"version": "10.0.100"` → `"version": "10.0.403"`. `rollForward` and the `test` section stay unchanged.
@@ -100,14 +92,14 @@ ARG DOTNET_SDK_VERSION=10.0.403
 
 ### Step 4: `devcontainer.yml` checks the version
 - Do: add `"global.json"` to both `pull_request.paths` and `push.paths`.
-- Do: after the step `Werkzeuge im Image prüfen`, append a new step:
+- Do: directly after the step `Werkzeuge im Image prüfen` (before the steps that follow it), insert a new step. Indentation: 6 spaces before `-`, like the other steps:
 ```yaml
-    - name: SDK version matches global.json
-      run: |
-        expected="$(jq -r .sdk.version global.json)"
-        actual="$(docker run --rm familyhome-devcontainer:ci dotnet --version)"
-        echo "global.json: $expected, Image: $actual"
-        test "$expected" = "$actual"
+      - name: SDK version matches global.json
+        run: |
+          expected="$(jq -r .sdk.version global.json)"
+          actual="$(docker run --rm familyhome-devcontainer:ci dotnet --version)"
+          echo "global.json: $expected, Image: $actual"
+          test "$expected" = "$actual"
 ```
 
 ### Step 5: The Android jobs use exactly this version

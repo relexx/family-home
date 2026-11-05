@@ -2,7 +2,7 @@
 status: open
 branch:
 assignee:
-depends_on: [533c3095]   # the Security Gate must work inside the DevContainer first
+depends_on: []           # requires PR #23 (DevContainer hardening), see Preconditions
 security_relevant: false
 ---
 
@@ -52,7 +52,7 @@ Exactly the 9 files in the patch, plus this work package file:
 - `tests/FamilyHome.Shared.Tests/FamilyHome.Shared.Tests.csproj`, `tests/FamilyHome.Shared.Tests/GermanHolidaysTests.cs`
 
 ## Preconditions
-- [ ] Package 533c3095 is in `work/archive/`.
+- [ ] PR #23 (DevContainer hardening) is merged: `gh pr view 23 --json state -q .state` prints `MERGED`. The DevContainer has been rebuilt since (`command -v gitleaks` prints a path).
 - [ ] Work happens in the DevContainer, `main` is up to date.
 - [ ] `dotnet test --project tests/FamilyHome.Shared.Tests` is green on `main` (6 tests).
 

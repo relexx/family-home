@@ -2,7 +2,7 @@
 status: open
 branch:
 assignee:
-depends_on: [533c3095, 3399485c, d188095c]  # they touch files translated here; run this package last to avoid conflicts
+depends_on: [3399485c, d188095c]  # they touch files translated here; run this package last to avoid conflicts
 security_relevant: true            # touches workflows, CODEOWNERS and the security concept (text only)
 ---
 
@@ -80,7 +80,8 @@ All tracked text files **except** the ones listed under "Out of scope". In parti
 - `.semgrep/**` (comments and `message:`), `BannedSymbols*.txt` (message text after `;`), `Directory.*.props`, `*.csproj`, `.editorconfig`, `.gitleaks.toml`, `.gitignore`, `.dockerignore`
 
 ## Preconditions
-- [ ] Packages 533c3095, 3399485c and d188095c are in `work/archive/`.
+- [ ] Packages 3399485c and d188095c are in `work/archive/`.
+- [ ] PR #23 (DevContainer hardening) is merged: `gh pr view 23 --json state -q .state` prints `MERGED`. The DevContainer has been rebuilt since (`command -v gitleaks` prints a path).
 - [ ] Work happens in the DevContainer, `main` is up to date, `scripts/security-gate.sh` is green on `main`.
 - [ ] There is no other open PR that changes `docs/`. If there is one: ask the owner whether to wait.
 

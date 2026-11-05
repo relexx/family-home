@@ -48,6 +48,7 @@ Exactly the 4 files in the patch, plus this work package file:
 
 ## Preconditions
 - [ ] Work happens in the DevContainer, `main` is up to date.
+- [ ] PR #23 (DevContainer hardening) is merged: `gh pr view 23 --json state -q .state` prints `MERGED`. The DevContainer has been rebuilt since (`command -v gitleaks` prints a path).
 - [ ] `git config --global --get commit.gpgsign` prints `true` (signing from wp-30936f54 is active).
 
 ## Claiming
@@ -95,7 +96,7 @@ Afterwards: `git config --global user.email` prints the real address again (the 
 ### Step 4: ShellCheck for the hook
 The Security Gate only checks `*.sh` files, so check the hook explicitly:
 ```bash
-docker run --rm -i koalaman/shellcheck:v0.11.0 - < .githooks/prepare-commit-msg && echo OK
+shellcheck - < .githooks/prepare-commit-msg && echo OK
 ```
 Expected: `OK`.
 

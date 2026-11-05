@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 branch:
 assignee:
 depends_on: []
@@ -131,7 +131,7 @@ scripts/security-gate.sh
 Rebuild the DevContainer and check the last acceptance criterion. Then, on the PR branch: set `status: done`, `git mv work/wp-533c3095-gate-devcontainer-mounts.md work/archive/`, squash-merge.
 
 ## Log (filled in by the worker)
-- Date/assignee:
-- PR:
-- Output of the checks (shortened):
-- Deviations/observations:
+- Date/assignee: 2026-11-05, owner
+- PR: none; superseded by PR #23 (DevContainer hardening)
+- Output of the checks (shortened): not run
+- Deviations/observations: Not implemented. PR #23 removes the Docker socket from the DevContainer; the gate runs the scanners as binaries from the image, so the mount problem no longer exists.
