@@ -4,14 +4,12 @@
   "service": "workspace",
   "workspaceFolder": "/workspaces/FamilyHome",
   "remoteUser": "vscode",
-  // Commit signing on every start; idempotent, never replaces an existing key
-  "postStartCommand": "bash .devcontainer/setup-signing.sh",
+  // On every start: wait for the egress firewall, then commit signing (idempotent, never replaces an existing key)
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "features": {
     "ghcr.io/devcontainers/features/node:2": { "version": "lts" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    // Docker für Testcontainers in den Server-Integrationstests
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     // Leichtgewichtiger Desktop (noVNC auf Port 6080), um das Avalonia-Desktop-Kopfprojekt anzuzeigen
     "ghcr.io/devcontainers/features/desktop-lite:1": {}
   },
@@ -27,7 +25,6 @@
       "extensions": [
         "ms-dotnettools.csdevkit",
         "AvaloniaTeam.vscode-avalonia",
-        "ms-azuretools.vscode-docker",
         "EditorConfig.EditorConfig",
         "anthropic.claude-code",
         // Additional AI workers for work packages (work/); the model connection is configured locally in the extension

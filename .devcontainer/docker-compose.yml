@@ -5,7 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sleep infinity
+    # Root only for the start: the egress firewall (.devcontainer/init-firewall.sh) and the desktop feature. VS Code and
+    # all lifecycle commands run as the user vscode (devcontainer.json, remoteUser), which has no sudo.
+    user: root
+    command: ["bash", "-c", "/usr/local/bin/init-firewall.sh && exec sleep infinity"]
+    cap_add: [NET_ADMIN, NET_RAW]
     volumes:
       - ..:/workspaces/FamilyHome:cached
       - nuget-cache:/home/vscode/.nuget
@@ -16,8 +20,10 @@ services:
       ConnectionStrings__FamilyHome: "Host=db;Port=5432;Database=familyhome;Username=familyhome;Password=familyhome"
       ASPNETCORE_ENVIRONMENT: Development
       CLAUDE_CONFIG_DIR: /home/vscode/.claude
+      # No telemetry, error reports or auto-updates (blocked by the firewall anyway); updates come with a rebuild
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
     extra_hosts:
-      # Erreichbarkeit des Host-ADB-Servers (siehe README, Abschnitt "Auf dem Handy testen")
+      # Host adb server and local model server; the firewall allows only these ports to the host (init-firewall.sh)
       - "host.docker.internal:host-gateway"
     depends_on:
       - db

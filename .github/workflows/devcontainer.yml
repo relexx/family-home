@@ -45,4 +45,33 @@ jobs:
             dotnet workload list | grep -q android
             java -version 2>&1 | head -1
             sdkmanager --list_installed | grep -E "platforms;|build-tools;|platform-tools"
-            pipx --version'
+            pipx --version
+            gitleaks version
+            hadolint --version
+            actionlint --version
+            shellcheck --version
+            semgrep --version
+            zizmor --version
+            iptables --version
+            ipset --version
+            test -x /usr/local/bin/init-firewall.sh
+            test "$(stat -c %U /usr/local/bin/init-firewall.sh)" = root
+            if command -v docker; then echo "docker must not be in the image"; exit 1; fi
+            if sudo -n true 2>/dev/null; then echo "the user must not have sudo"; exit 1; fi'
+
+      # Dependabot updates the FROM lines in the Dockerfile, but not the docker run lines in security-lint.yml
+      - name: Scanner-Versionen wie in security-lint.yml
+        run: |
+          set -e
+          for image in zricethezav/gitleaks hadolint/hadolint rhysd/actionlint koalaman/shellcheck; do
+            dev=$(grep -oE "FROM ${image}:[^@ ]+" .devcontainer/Dockerfile | cut -d: -f2)
+            ci=$(grep -oE "${image}:[^ ]+" .github/workflows/security-lint.yml | sort -u | cut -d: -f2)
+            echo "$image: devcontainer=$dev ci=$ci"
+            test -n "$dev" && test "$dev" = "$ci"
+          done
+          dev=$(grep -oE 'SEMGREP_VERSION=[^ ]+' .devcontainer/Dockerfile | cut -d= -f2)
+          ci=$(grep -oE 'semgrep/semgrep:[^ ]+' .github/workflows/security-lint.yml | cut -d: -f2)
+          echo "semgrep: devcontainer=$dev ci=$ci"; test -n "$dev" && test "$dev" = "$ci"
+          dev=$(grep -oE 'ZIZMOR_VERSION=[^ ]+' .devcontainer/Dockerfile | cut -d= -f2)
+          ci=$(grep -oE 'zizmor==[^ ]+' .github/workflows/security-lint.yml | cut -d= -f3)
+          echo "zizmor: devcontainer=$dev ci=$ci"; test -n "$dev" && test "$dev" = "$ci"

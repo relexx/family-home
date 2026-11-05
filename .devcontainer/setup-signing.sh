@@ -14,8 +14,11 @@ if [[ -z "$email" ]]; then
   exit 0
 fi
 
-# Named volumes belong to root when they are created
-[[ -O "$dir" ]] || sudo chown "$(id -u):$(id -g)" "$dir"
+# The Dockerfile creates the directory for the user, so a new volume belongs to the user as well (no sudo in the container)
+if [[ ! -O "$dir" ]]; then
+  echo "Commit signing: $dir does not belong to $(id -un); recreate the volume git-signing (docs/SICHERHEIT.md ch. 8)" >&2
+  exit 1
+fi
 chmod 700 "$dir"
 
 created=false
