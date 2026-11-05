@@ -59,6 +59,19 @@ jobs:
             if command -v docker; then echo "docker must not be in the image"; exit 1; fi
             if sudo -n true 2>/dev/null; then echo "the user must not have sudo"; exit 1; fi'
 
+      # Processes started as root (entrypoint, firewall) must not find commands in user-writable directories
+      - name: Root-PATH nicht vom Benutzer beschreibbar
+        run: |
+          root_path=$(grep -oE '^ +PATH: [^ ]+' .devcontainer/docker-compose.yml | awk '{print $2}')
+          test -n "$root_path"
+          docker run --rm -e "ROOT_PATH=$root_path" familyhome-devcontainer:ci bash -c '
+            IFS=:
+            for d in $ROOT_PATH; do
+              [ -e "$d" ] || continue
+              if [ -w "$d" ]; then echo "user-writable directory in the root PATH: $d"; exit 1; fi
+            done
+            echo "root PATH ok: $ROOT_PATH"'
+
       # Dependabot updates the FROM lines in the Dockerfile, but not the docker run lines in security-lint.yml
       - name: Scanner-Versionen wie in security-lint.yml
         run: |

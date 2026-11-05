@@ -8,7 +8,7 @@ services:
     # Root only for the start: the egress firewall (.devcontainer/init-firewall.sh) and the desktop feature. VS Code and
     # all lifecycle commands run as the user vscode (devcontainer.json, remoteUser), which has no sudo.
     user: root
-    command: ["bash", "-c", "/usr/local/bin/init-firewall.sh && exec sleep infinity"]
+    command: ["/bin/bash", "-c", "/usr/local/bin/init-firewall.sh && exec sleep infinity"]
     cap_add: [NET_ADMIN, NET_RAW]
     volumes:
       - ..:/workspaces/FamilyHome:cached
@@ -17,6 +17,10 @@ services:
       # Commit signing key (.devcontainer/setup-signing.sh), survives rebuilds
       - git-signing:/home/vscode/.signing
     environment:
+      # PATH for the processes started as root (entrypoint, firewall): only root-owned directories. The node feature
+      # puts the user-writable nvm directory first, which would let the user plant e.g. "iptables" for root.
+      # The user's sessions get the full PATH via remoteEnv in devcontainer.json.
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ConnectionStrings__FamilyHome: "Host=db;Port=5432;Database=familyhome;Username=familyhome;Password=familyhome"
       ASPNETCORE_ENVIRONMENT: Development
       CLAUDE_CONFIG_DIR: /home/vscode/.claude

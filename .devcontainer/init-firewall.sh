@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Egress firewall of the DevContainer (docs/SICHERHEIT.md ch. 8), modelled on Anthropic's reference DevContainer.
 # Runs as root when the container starts (docker-compose.yml, `command`); the container user cannot run it (no sudo).
 # Outbound traffic is denied by default. Allowed: loopback (incl. Docker's DNS on 127.0.0.11), the Compose network
@@ -7,6 +7,8 @@
 # When the rules are active, the script writes READY_FILE; .devcontainer/post-start.sh waits for it.
 set -euo pipefail
 IFS=$'\n\t'
+# Runs as root: never take commands from a directory the user can write to
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 # adb server (README, "Auf dem Handy testen") and the local model server of the AI workers
 HOST_PORTS="5037,47831"
