@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Named Volumes gehören nach dem Anlegen root
-sudo chown -R vscode:vscode /home/vscode/.nuget /home/vscode/.claude
-
 dotnet --list-sdks
 dotnet workload list
 
