@@ -53,7 +53,7 @@ jobs:
             semgrep --version
             zizmor --version
             iptables --version
-            ipset --version
+            command -v ipset >/dev/null  # --version queries the kernel and needs NET_ADMIN
             test -x /usr/local/bin/init-firewall.sh
             test "$(stat -c %U /usr/local/bin/init-firewall.sh)" = root
             if command -v docker; then echo "docker must not be in the image"; exit 1; fi
