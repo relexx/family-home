@@ -36,7 +36,7 @@ services:
 
   # CalDAV/CardDAV-Testserver für die DAV-Sync-Entwicklung (http://radicale:5232, Login beliebig)
   radicale:
-    image: tomsquest/docker-radicale:3.8.3.0@sha256:a3b1b452f4bc3d1aee43015b85bc2d9ee5de0ff7e96d5d2b47f1d889aa682409
+    image: tomsquest/docker-radicale:3.9.1.0@sha256:3acf47502c5e5a92c6a5dba9eeb7174bb7a20c78b0ab9d6a46ff876a4aab2510
     restart: unless-stopped
     volumes:
       - radicale-data:/data
