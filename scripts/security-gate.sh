@@ -2,18 +2,12 @@
 # Security Gate (docs/SICHERHEIT.md Kap. 7) – muss vor jedem PR grün sein. Die CI führt dieselben Prüfungen aus.
 #
 #   scripts/security-gate.sh          alle Prüfungen
-#   scripts/security-gate.sh --quick  nur .NET (Build mit Analyzern, Format, Tests, Audit) – ohne Docker
+#   scripts/security-gate.sh --quick  nur .NET (Build mit Analyzern, Format, Tests, Audit) – ohne Scanner
 #
-# Externe Werkzeuge laufen in gepinnten Containern; Versionen hier und in .github/workflows/security-lint.yml synchron halten.
+# The scanners are installed in the DevContainer image (.devcontainer/Dockerfile, versions pinned there and synced with
+# .github/workflows/security-lint.yml). Outside the DevContainer, only --quick works; the full gate refuses to run.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-
-GITLEAKS_IMAGE="zricethezav/gitleaks:v8.30.1"
-HADOLINT_IMAGE="hadolint/hadolint:v2.15.1"
-ACTIONLINT_IMAGE="rhysd/actionlint:1.7.12"
-SHELLCHECK_IMAGE="koalaman/shellcheck:v0.11.0"
-SEMGREP_IMAGE="semgrep/semgrep:1.182.1"
-ZIZMOR_VERSION="1.31.1"
 
 PROJECTS=(
   src/FamilyHome.Shared
@@ -49,24 +43,31 @@ dotnet_vulnerable() {
   done
 }
 
-docker_run() { docker run --rm -v "$PWD:/src:ro" -w /src "$@"; }
+# Fails loudly if a scanner is missing, so that a skipped check is never reported as green
+need() {
+  command -v "$1" >/dev/null && return 0
+  echo "$1 is missing: run the full gate in the DevContainer (scripts/security-gate.sh --quick works everywhere)"
+  return 1
+}
 
 gitleaks_scan() {
-  docker_run "$GITLEAKS_IMAGE" git --redact --no-banner --config /src/.gitleaks.toml /src &&
-  docker_run "$GITLEAKS_IMAGE" dir --redact --no-banner --config /src/.gitleaks.toml /src
+  need gitleaks || return 1
+  gitleaks git --redact --no-banner --config .gitleaks.toml . &&
+  gitleaks dir --redact --no-banner --config .gitleaks.toml .
 }
-hadolint_scan() { docker_run "$HADOLINT_IMAGE" hadolint --failure-threshold warning src/FamilyHome.Server/Dockerfile .devcontainer/Dockerfile; }
-actionlint_scan() { docker_run "$ACTIONLINT_IMAGE" -color; }
-shellcheck_scan() { mapfile -t files < <(git ls-files --cached --others --exclude-standard '*.sh'); docker_run "$SHELLCHECK_IMAGE" "${files[@]}"; }
+hadolint_scan() { need hadolint && hadolint --failure-threshold warning src/FamilyHome.Server/Dockerfile .devcontainer/Dockerfile; }
+actionlint_scan() { need actionlint && need shellcheck && actionlint -color; }
+shellcheck_scan() {
+  need shellcheck || return 1
+  mapfile -t files < <(git ls-files --cached --others --exclude-standard '*.sh')
+  shellcheck "${files[@]}"
+}
 semgrep_scan() {
-  docker_run -e SEMGREP_SEND_METRICS=off "$SEMGREP_IMAGE" semgrep scan --error --metrics=off --quiet \
+  need semgrep || return 1
+  SEMGREP_SEND_METRICS=off SEMGREP_ENABLE_VERSION_CHECK=0 semgrep scan --error --metrics=off --quiet \
     --config p/csharp --config p/secrets --config p/dockerfile --config p/github-actions --config .semgrep/
 }
-zizmor_scan() {
-  if command -v pipx >/dev/null; then pipx run "zizmor==$ZIZMOR_VERSION" --offline .github/workflows
-  elif command -v uvx >/dev/null; then uvx "zizmor@$ZIZMOR_VERSION" --offline .github/workflows
-  else echo "pipx oder uvx fehlt (im DevContainer vorhanden)"; return 1; fi
-}
+zizmor_scan() { need zizmor && zizmor --offline .github/workflows; }
 
 run ".NET-Build mit Analyzern (Warnungen = Fehler)" dotnet_build
 run "Formatierung"                                 dotnet_format

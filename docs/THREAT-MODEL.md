@@ -1,6 +1,6 @@
 # FamilyHome – Bedrohungsmodell (STRIDE)
 
-Stand: 2026-10-26 · Wird bei **jeder** Architektur- oder Schnittstellenänderung fortgeschrieben (docs/SICHERHEIT.md Kap. 7.1).
+Stand: 2026-11-04 · Wird bei **jeder** Architektur- oder Schnittstellenänderung fortgeschrieben (docs/SICHERHEIT.md Kap. 7.1).
 
 ## Vertrauensgrenzen
 
@@ -8,6 +8,7 @@ Stand: 2026-10-26 · Wird bei **jeder** Architektur- oder Schnittstellenänderun
 [Internet] ─TB1─ [Caddy: TLS + Gerätezertifikat] ─TB2─ [Server (internes Netz)] ─TB3─ [PostgreSQL (internes Netz)]
                                                           └─TB4─ [externe CalDAV/CardDAV/ICS-Server]
 [App-Prozess] ─TB5─ [Android Keystore / SQLCipher-DB]     [GitHub CI] ─TB6─ [GHCR / Releases] ─TB7─ [update.sh / Updater]
+[DevContainer: Claude, AI workers, project code] ─TB8─ [Host, LAN, Internet]
 ```
 
 ## Risiken
@@ -25,3 +26,6 @@ Stand: 2026-10-26 · Wird bei **jeder** Architektur- oder Schnittstellenänderun
 | 9 | TB6 | T | Kompromittierte Abhängigkeit oder Action | Lock-Dateien, Source Mapping, SHA-gepinnte Actions, zizmor, Dependency Review, NuGet-Audit | **umgesetzt** |
 | 10 | TB7 | T | Gefälschtes Server-Image oder gefälschte APK | cosign-Prüfung gegen die Workflow-Identität, Ed25519-Manifest, Android-Signaturprüfung | teilweise |
 | 11 | alle | R | Bestreiten kritischer Aktionen | Audit-Log (nur anhängen) mit Gerät und Account | Phase 0 |
+| 12 | TB8 | E | Code in the DevContainer (malicious dependency, prompt injection of an AI agent) takes over the host via the Docker socket | No Docker socket; scanners as binaries in the image; container not privileged, no `sudo` for the user | **implemented** |
+| 13 | TB8 | I | Exfiltration of the GitHub token, signing key or source code | Egress firewall with allow list (default deny, no LAN, host only on 5037/47831), self-test at start; remaining risk: DNS tunnelling, allowed domains (e.g. GitHub) as a channel | **implemented** |
+| 14 | TB8 | T | Pushes or merges with the owner's identity | Branch protection, required checks, CODEOWNER review and the owner's merge; the container cannot register keys | **implemented** |
