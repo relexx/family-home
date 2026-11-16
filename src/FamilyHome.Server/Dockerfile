@@ -10,7 +10,7 @@ COPY src/FamilyHome.Shared/ src/FamilyHome.Shared/
 COPY src/FamilyHome.Server/ src/FamilyHome.Server/
 RUN dotnet publish src/FamilyHome.Server/FamilyHome.Server.csproj -c Release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:f2557fb81b1cfcfdfcde9d3bf247ed60b2cd38f00a88153f61e34737fab8ade7
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1
 WORKDIR /app
 COPY --from=build /app .
 ENV ASPNETCORE_URLS=http://+:8080 \
