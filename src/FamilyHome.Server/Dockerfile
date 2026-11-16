@@ -1,6 +1,6 @@
 # Build-Kontext: Repository-Wurzel  →  docker build -f src/FamilyHome.Server/Dockerfile .
 # Laufzeit: "chiseled" Ubuntu-Image (ohne Shell/Paketmanager), Nicht-Root (docs/SICHERHEIT.md Kap. 5.2)
-FROM mcr.microsoft.com/dotnet/sdk:10.0-noble@sha256:212fe4cb74627d5adf9817a4088906ae3edff1bd853bb27565d4b46731efe61e AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-noble@sha256:fe0fd4e93bd2fbb47c883b7a6369e5c8d3db8bf01cdc5981f6ee35fbdf3ff4fb AS build
 WORKDIR /src
 COPY global.json nuget.config Directory.Build.props Directory.Packages.props BannedSymbols.txt .editorconfig ./
 COPY src/FamilyHome.Shared/*.csproj src/FamilyHome.Shared/packages.lock.json src/FamilyHome.Shared/
