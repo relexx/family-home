@@ -24,7 +24,7 @@ Open Source (Apache-2.0). **Eine Familie pro Server**, selbst gehostet; die App 
 dotnet build FamilyHome.slnx
 dotnet test --project tests/FamilyHome.Shared.Tests
 dotnet test --project tests/FamilyHome.Server.Tests       # inkl. Sicherheitstests
-scripts/security-gate.sh                                   # Security Gate komplett (--quick: nur .NET)
+scripts/security-gate.sh                                   # Security Gate komplett, nur im DevContainer (--quick: nur .NET)
 dotnet run --project src/FamilyHome.Server                 # http://localhost:5080, DB = Service "db"
 dotnet run --project src/FamilyHome.Client.Desktop         # Anzeige im noVNC-Desktop (Port 6080)
 dotnet build src/FamilyHome.Client.Android -t:Install      # APK auf verbundenes Gerät (adb)

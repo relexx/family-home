@@ -166,25 +166,18 @@ Voraussetzung: Docker und VS Code mit der Extension „Dev Containers“ (oder d
    - einen leichten Desktop per noVNC auf <http://localhost:6080> (Passwort `vscode`) für die Avalonia-Desktop-Variante
 3. Claude starten: im Terminal des Containers `claude` aufrufen.
 
+The container is hardened (docs/SICHERHEIT.md ch. 8): outbound traffic only to an allow list, no Docker, no `sudo`. Additional tools belong in `.devcontainer/Dockerfile`; after changes there, rebuild the container. Recommended in your VS Code user settings: `"dev.containers.mountWaylandSocket": false`. The full Security Gate (`scripts/security-gate.sh`) runs only in the DevContainer, because the scanners are installed there.
+
 #### Auf dem Handy testen
 
-Im Container läuft kein Android-Emulator, weil dafür KVM nötig wäre. Es gibt zwei Wege:
+Im Container läuft kein Android-Emulator, weil dafür KVM nötig wäre.
 
-**A) WLAN-Debugging, direkt aus dem Container** (Android 11+): *Entwickleroptionen → Kabelloses Debugging → Gerät mit Kopplungscode koppeln*. Danach im Container:
+The container has no access to the LAN (egress firewall, docs/SICHERHEIT.md ch. 8). The phone is therefore always connected through the **adb server on the host**, via USB or wireless debugging:
 
-```bash
-adb pair <ip>:<pair-port>
-```
+1. On the host: `adb -a nodaemon server start` (for wireless debugging, first `adb pair <ip>:<pair-port>` and `adb connect <ip>:<port>` on the host).
+2. In the container: `export ADB_SERVER_SOCKET=tcp:host.docker.internal:5037`, then `dotnet build src/FamilyHome.Client.Android -t:Install`.
 
-```bash
-adb connect <ip>:<port>
-```
-
-```bash
-dotnet build src/FamilyHome.Client.Android -t:Install
-```
-
-**B) Host-adb nutzen** (USB-Gerät oder Emulator auf dem Host): Auf dem Host läuft `adb -a nodaemon server start`. Im Container wird `ADB_SERVER_SOCKET=tcp:host.docker.internal:5037` gesetzt.
+`adb -a` listens on all interfaces of the host. The host firewall must block port 5037 from the LAN.
 
 Der Server muss vom Handy aus erreichbar sein. In der Entwicklung bedeutet das: die IP des Rechners und Port 5080, die von VS Code weitergeleitet werden.
 
